@@ -5,7 +5,7 @@ build-backend = "scikit_build_core.build"
 
 
 [project]
-name = "arrayProduct"
+name = "medianFilter"
 version = "0.0.1"
 description = "A state of the art C++ binding example for C++, Python and Matlab"
 readme = "README.md"
@@ -33,9 +33,9 @@ test = ["pytest"]
 
 
 [project.urls]
-"Homepage" = "https://github.com/mohammadraziei/cmake-matlab-python-cpp-example"
-"Bug Tracker" = "https://github.com/mohammadraziei/cmake-matlab-python-cpp-example/issues"
-"Document" = "https://mohammadraziei.github.io/cmake-matlab-python-cpp-example/latest"
+"Homepage" = "https://github.com/mohammadraziei/medianFilterCpp"
+"Bug Tracker" = "https://github.com/mohammadraziei/medianFilterCpp/issues"
+"Document" = "https://mohammadraziei.github.io/medianFilterCpp/latest"
 
 
 [tool.cibuildwheel]

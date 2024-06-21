@@ -27,10 +27,6 @@ set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS}" CACHE STRING "" FORCE)
 project(${PyProject_NAME} LANGUAGES CXX VERSION ${PyProject_VERSION})
 message(STATUS "Project: ${PROJECT_NAME}@v${PROJECT_VERSION}")
 
-# Download the public suffix list file from the internet if not already exists
-
-file(GLOB SOURCES ${PROJECT_SOURCE_DIR}/src/*.cpp)
-
 
 # Try to import all Python components potentially needed by nanobind
 
@@ -91,7 +87,7 @@ if(DEFINED PYTHON_PROJECT_NAME)
         NB_STATIC
 
         # Source code goes here
-        ${PROJECT_SOURCE_DIR}/src/binding/bind_arrayProduct.cpp
+        ${PROJECT_SOURCE_DIR}/src/binding/bind_medianFilter.cpp
     )
 
     target_sources(_core PRIVATE ${SOURCES})
@@ -114,18 +110,15 @@ if(DEFINED SKBUILD)
     RETURN()
 endif()
 
-add_library(c${PROJECT_NAME} SHARED ${SOURCES})
+add_library(c${PROJECT_NAME} INTERFACE)
 
 
-target_include_directories(c${PROJECT_NAME}
-        PUBLIC
-            ${PROJECT_SOURCE_DIR}/include
-        PRIVATE
-            ${PROJECT_SOURCE_DIR}/src)
+target_include_directories(c${PROJECT_NAME} INTERFACE ${PROJECT_SOURCE_DIR}/include)
 
 
-# add_executable(example examples/main.cpp)
-# target_link_libraries(example PRIVATE )
+
+ add_executable(example examples/main.cpp)
+ target_link_libraries(example PRIVATE c${PROJECT_NAME})
 
 install(TARGETS c${PROJECT_NAME}
     LIBRARY DESTINATION lib
@@ -136,7 +129,8 @@ install(TARGETS c${PROJECT_NAME}
 
 enable_testing()
 
-add_subdirectory(${CMAKE_CURRENT_SOURCE_DIR}/third_party/googletest)
+
+add_subdirectory(${CMAKE_CURRENT_SOURCE_DIR}/tests/third_party/googletest)
 file(GLOB TEST_SOURCES ${PROJECT_SOURCE_DIR}/tests/cpp/*.cpp)
 
 add_executable(test_${PROJECT_NAME} ${TEST_SOURCES})
@@ -144,7 +138,6 @@ target_link_libraries(test_${PROJECT_NAME} PRIVATE c${PROJECT_NAME} gtest gtest_
 target_include_directories(test_${PROJECT_NAME} PRIVATE ${PROJECT_SOURCE_DIR}/tests/cpp)
 
 add_test(NAME cppTests COMMAND test_${PROJECT_NAME})
-
 
 
 if(BUILD_PYTHON)
@@ -168,7 +161,7 @@ if(Matlab_VERSION_STRING VERSION_LESS 9.14)
 endif()
 
 matlab_add_mex(NAME ${PROJECT_NAME}Mex SHARED SRC
-    ${PROJECT_SOURCE_DIR}/src/mex/mex_arrayProduct.cpp
+        ${PROJECT_SOURCE_DIR}/src/mex/mex_medianFilter.cpp
     OUTPUT_NAME ${PROJECT_NAME}
 )
 target_sources(${PROJECT_NAME}Mex PRIVATE ${SOURCES})
@@ -198,6 +191,27 @@ COMMAND ${Matlab_MAIN_PROGRAM} -sd ${PROJECT_SOURCE_DIR}
 )
 endif()
 endif()
+
+
+
+## Fetch Google Benchmark
+#include(FetchContent)
+#FetchContent_Declare(
+#  benchmark
+#  URL "https://github.com/google/benchmark/archive/v1.6.1.tar.gz"
+#)
+#FetchContent_MakeAvailable(benchmark)
+#
+#
+#add_executable(my_benchmarks benchmarks.cpp)
+#
+## Link against the benchmark library
+#target_link_libraries(my_benchmarks PRIVATE benchmark::benchmark_main)
+#add_custom_target(run_benchmarks
+#  COMMAND ${CMAKE_CURRENT_BINARY_DIR}/my_benchmarks
+#  WORKING_DIRECTORY ${CMAKE_CURRENT_BINARY_DIR}
+#)
+
 
 
 # Find Doxygen package

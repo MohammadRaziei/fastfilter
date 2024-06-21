@@ -2,7 +2,7 @@
 #include <nanobind/stl/vector.h>
 
 #include <string>
-#include "arrayProduct.h"
+#include "medianFilter.h"
 
 #define STRINGIFY(x) #x
 #define MACRO_STRINGIFY(x) STRINGIFY(x)
