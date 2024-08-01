@@ -1,8 +1,23 @@
-#include <array>
-#include <algorithm>
+#include <filesystem>
+#include <fstream>
+#include <iostream>
+#include <regex>
+#include <string>
+#include <sstream>
+#include <vector>
 #include <gtest/gtest.h>
 
+#include <nlohmann/json.hpp>
+
 #include "medianFilter.h"
+
+//#include "../../examples/common.h"
+
+namespace fs = std::filesystem;
+
+
+const fs::path CURRENT_WORK_DIR = fs::path(__FILE__).parent_path();
+
 
 // class MedianFilterTest : public ::testing::Test {
 // protected:
@@ -35,20 +50,64 @@ TEST(sortedInOut, test1) {
 
 
 
-// TEST_F(ArrayProductTest, MultiplierIs0) {
-//     double multiplier = 0.0;
-//     std::vector<double> expected = {0.0, 0.0, 0.0, 0.0};
 
-//     arrayProduct(input, multiplier);
+// A simple structure to hold a pair of vectors for input and output
+struct TestCase {
+    std::vector<float> input;
+    std::vector<float> output;
+    size_t windowSize;
+};
 
-//     ASSERT_EQ(input, expected);
-// }
 
-// TEST_F(ArrayProductTest, MultiplierIsNegative) {
-//     double multiplier = -1.5;
-//     std::vector<double> expected = {-1.5, -3.0, -4.5, -6.0};
 
-//     arrayProduct(input, multiplier);
 
-//     ASSERT_EQ(input, expected);
-// }
+// Parse the JSON file and return a vector of pairs (input, output)
+std::vector<TestCase> parse_json(const std::string& filename) {
+    std::ifstream file(filename);
+    nlohmann::json data;
+    file >> data;
+
+
+    std::vector<TestCase> test_cases;
+    for (auto& item : data) {
+        std::vector<int> input = item["input"];
+        std::vector<int> output = item["output"];
+
+        TestCase testCase;
+        testCase.input = item["input"].get<std::vector<float>>();
+        testCase.output = item["output"].get<std::vector<float>>();
+        testCase.windowSize = item["windowSize"].get<size_t>();
+
+        test_cases.emplace_back(testCase);
+    }
+
+    return test_cases;
+}
+
+
+class MedfiltTest : public ::testing::TestWithParam<TestCase> {};
+
+
+INSTANTIATE_TEST_SUITE_P(
+        MedfiltTests,
+        MedfiltTest,
+        ::testing::ValuesIn(parse_json(
+                (CURRENT_WORK_DIR.parent_path() / "data.json").string())));
+
+
+
+TEST_P(MedfiltTest, MedfiltFunction) {
+    auto& tc = GetParam();
+    // Assuming medfilt is a function that takes a vector<int> and returns a vector<int>
+    std::vector<float> output;
+    filt::movingFilter(output, tc.input, tc.windowSize/2, filt::kernel::median);
+    ASSERT_EQ(output, tc.output);
+}
+
+TEST_P(MedfiltTest, MedfiltFunctionInplace) {
+    auto& tc = GetParam();
+    // Assuming medfilt is a function that takes a vector<int> and returns a vector<int>
+    std::vector<float> output = tc.input;
+    filt::movingFilter(output, output, tc.windowSize / 2, filt::kernel::median);
+    ASSERT_EQ(output, tc.output);
+}

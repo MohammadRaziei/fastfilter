@@ -6,31 +6,13 @@
 #include <cmath>
 #include <stdint.h>
 #include <algorithm>
+#include <map>
 
-enum class ParallelMethod {
-    NONE, CPU, GPU
-};
+//enum class ParallelMethod {
+//    NONE, CPU, GPU
+//};
 
-namespace utils {
-    template<typename T>
-    inline void movingAverageFilterKernel(T output[],
-                                          const T input[],
-                                          const uint32_t len,
-                                          const uint32_t halfWindow,
-                                          const bool fromScratch=true) {
-        const uint32_t windowSize = 2 * halfWindow + 1;
-        T sum = 0;
-        if (!fromScratch) {
-            for (uint32_t i = 1; i < windowSize - 1; ++i)
-                sum += input[i];
-        }
-        sum += input[windowSize - 1];
-        output[0] = sum / windowSize;
-        for (uint32_t i = 0; i < len - 1; ++i) {
-            sum += (input[i + windowSize] - input[i]);
-            output[i + 1] = sum / windowSize;
-        }
-    }
+namespace utils{
 
     template<typename T>
     inline void sortedInOut(T sortedData[],
@@ -60,26 +42,56 @@ namespace utils {
             }
         }
     }
+}
 
-    template<typename T>
-    inline void medianFilterKernel(T output[],
-                                   const T input[],
-                                   const uint32_t len,
-                                   const uint32_t halfWindow,
-                                   const bool fromScratch = true) {
-        const uint32_t windowSize = 2 * halfWindow + 1;
-        T *temp = new T[windowSize + 1];
-        memcpy(temp, input, windowSize * sizeof(T));
 
-        if (!fromScratch) {
-            std::sort(temp, temp + windowSize);
+namespace filt {
+
+    namespace kernel {
+        template<typename T>
+        using KernelType = void (*)(T[], const T[], const uint32_t, const uint32_t, const bool);
+
+        template<typename T>
+        inline void movingAverage(T output[],
+                                              const T input[],
+                                              const uint32_t len,
+                                              const uint32_t halfWindow,
+                                              const bool fromScratch=true) {
+            const uint32_t windowSize = 2 * halfWindow + 1;
+            T sum = 0;
+            if (!fromScratch) {
+                for (uint32_t i = 1; i < windowSize - 1; ++i)
+                    sum += input[i];
+            }
+            sum += input[windowSize - 1];
+            output[0] = sum / windowSize;
+            for (uint32_t i = 0; i < len - 1; ++i) {
+                sum += (input[i + windowSize] - input[i]);
+                output[i + 1] = sum / windowSize;
+            }
         }
-        output[0] = temp[halfWindow];
-        for (uint32_t i = 0; i < len - 1; ++i) {
-            sortedInOut(temp, windowSize, input[i], input[i + windowSize]);
-            output[i + 1] = temp[halfWindow];
+
+        template<typename T>
+        inline void median(T output[],
+                                       const T input[],
+                                       const uint32_t len,
+                                       const uint32_t halfWindow,
+                                       const bool fromScratch = true) {
+            const uint32_t windowSize = 2 * halfWindow + 1;
+            T *temp = new T[windowSize + 1];
+            memcpy(temp, input, windowSize * sizeof(T));
+
+            if (!fromScratch) {
+                std::sort(temp, temp + windowSize);
+            }
+            output[0] = temp[halfWindow];
+            for (uint32_t i = 0; i < len - 1; ++i) {
+                utils::sortedInOut(temp, windowSize, input[i], input[i + windowSize]);
+                output[i + 1] = temp[halfWindow];
+            }
+            delete[] temp;
         }
-        delete[] temp;
+
     }
 
     template<typename T>
@@ -88,7 +100,7 @@ namespace utils {
             const T input[],
             const size_t vecSize,
             const uint32_t halfWindow,
-            void (&filtKernel)(T[], const T[], const uint32_t, const uint32_t, const bool)){
+            kernel::KernelType<T> filtKernel){
 //            const ParallelMethod &method = ParallelMethod::NONE)
         const uint32_t windowSize = 2 * halfWindow + 1;
         std::vector <T> inp(vecSize + windowSize);
@@ -140,12 +152,18 @@ namespace utils {
             std::vector <T> &output,
             const std::vector <T> &input,
             const uint32_t halfWindow,
-            void (&filtKernel)(T[], const T[], const uint32_t, const uint32_t, const bool)){
+            kernel::KernelType<T> filtKernel){
         const size_t vectorSize = input.size();
         output.resize(vectorSize);
-        return utils::movingFilter(output.data(), input.data(), vectorSize, filtKernel);
+        return filt::movingFilter(output.data(), input.data(), vectorSize, halfWindow, filtKernel);
     }
 
-}  // namespace utils
+    template<typename T>
+    std::map<std::string, kernel::KernelType<T>> kernels{
+            {"median", kernel::median},
+            {"movingAverage", kernel::movingAverage}
+        };
+}  // namespace filt
+
 
 #endif

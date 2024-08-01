@@ -137,6 +137,23 @@ add_executable(test_${PROJECT_NAME} ${TEST_SOURCES})
 target_link_libraries(test_${PROJECT_NAME} PRIVATE c${PROJECT_NAME} gtest gtest_main pthread)
 target_include_directories(test_${PROJECT_NAME} PRIVATE ${PROJECT_SOURCE_DIR}/tests/cpp)
 
+
+# Enable the FetchContent module
+include(FetchContent)
+
+# Set up the nlohmann_json target
+FetchContent_Declare(
+        nlohmann_json
+        GIT_REPOSITORY https://github.com/nlohmann/json.git
+        GIT_TAG v3.11.2 # or any other tag/version you prefer
+)
+
+# Download and build the library
+FetchContent_MakeAvailable(nlohmann_json)
+
+# Link against the nlohmann_json target
+target_link_libraries(test_${PROJECT_NAME} PRIVATE nlohmann_json::nlohmann_json)
+
 add_test(NAME cppTests COMMAND test_${PROJECT_NAME})
 
 

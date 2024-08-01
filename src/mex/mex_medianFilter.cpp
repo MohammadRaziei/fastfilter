@@ -13,8 +13,9 @@
 *
 */
 
-#include "mex.hpp"
-#include "mexAdapter.hpp"
+#include <mex.hpp>
+#include <mexAdapter.hpp>
+#include <stdint.h>
 
 #include "medianFilter.h"
 
@@ -25,16 +26,16 @@ private:
 public:
     void operator()(matlab::mex::ArgumentList outputs, matlab::mex::ArgumentList inputs) {
         checkArguments(outputs, inputs);
-        double multiplier = inputs[0][0];
+        const uint32_t windowSize = (uint32_t) inputs[0][0];
         matlab::data::TypedArray<double> in = std::move(inputs[1]);
-        arrayProductFunc(in, multiplier);
+        func(in, windowSize);
         outputs[0] = std::move(in);
     }
 
-    void arrayProductFunc(matlab::data::TypedArray<double>& inMatrix, double multiplier) {
+    void func(matlab::data::TypedArray<double>& inMatrix, uint32_t windowSize) {
         size_t size = inMatrix.end() - inMatrix.begin();
         double* data = inMatrix.begin().operator->();
-        arrayProduct(data, size, multiplier);
+        utils::movingFilter(data, data, size,  windowSize / 2, utils::medianFilterKernel);
     }
 
     void checkArguments(matlab::mex::ArgumentList outputs, matlab::mex::ArgumentList inputs) {
