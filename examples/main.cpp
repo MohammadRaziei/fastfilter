@@ -35,9 +35,7 @@ int main() {
     std::vector<float> filtData(data.size());
     const uint32_t halfWindowSize = 5;
     tic;
-    utils::movingFilter(filtData, data, halfWindowSize,
-                                     utils::medianFilterKernel,
-                                     ParallelMethod::NONE);
+    utils::movingFilter(filtData, data, halfWindowSize, utils::medianFilterKernel);
     toc;
 
     show(filtData);

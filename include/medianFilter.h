@@ -16,11 +16,15 @@ namespace utils {
     inline void movingAverageFilterKernel(T output[],
                                           const T input[],
                                           const uint32_t len,
-                                          const uint32_t halfWindow) {
+                                          const uint32_t halfWindow,
+                                          const bool fromScratch=true) {
         const uint32_t windowSize = 2 * halfWindow + 1;
         T sum = 0;
-        for (uint32_t i = 0; i < windowSize; ++i)
-            sum += input[i];
+        if (!fromScratch) {
+            for (uint32_t i = 1; i < windowSize - 1; ++i)
+                sum += input[i];
+        }
+        sum += input[windowSize - 1];
         output[0] = sum / windowSize;
         for (uint32_t i = 0; i < len - 1; ++i) {
             sum += (input[i + windowSize] - input[i]);
@@ -61,12 +65,15 @@ namespace utils {
     inline void medianFilterKernel(T output[],
                                    const T input[],
                                    const uint32_t len,
-                                   const uint32_t halfWindow) {
+                                   const uint32_t halfWindow,
+                                   const bool fromScratch = true) {
         const uint32_t windowSize = 2 * halfWindow + 1;
         T *temp = new T[windowSize + 1];
         memcpy(temp, input, windowSize * sizeof(T));
 
-        std::sort(temp, temp + windowSize);
+        if (!fromScratch) {
+            std::sort(temp, temp + windowSize);
+        }
         output[0] = temp[halfWindow];
         for (uint32_t i = 0; i < len - 1; ++i) {
             sortedInOut(temp, windowSize, input[i], input[i + windowSize]);
@@ -75,27 +82,25 @@ namespace utils {
         delete[] temp;
     }
 
-    template<uint32_t NUM_THREADS = 8, typename T>
+    template<typename T>
     void movingFilter(
-            std::vector <T> &output,
-            const std::vector <T> &input,
+            T output[],
+            const T input[],
+            const size_t vecSize,
             const uint32_t halfWindow,
-            void (&filtKernel)(T[], const T[], const uint32_t, const uint32_t),
-            const ParallelMethod &method = ParallelMethod::NONE) {
-        const size_t vecSize = input.size();
+            void (&filtKernel)(T[], const T[], const uint32_t, const uint32_t, const bool)){
+//            const ParallelMethod &method = ParallelMethod::NONE)
         const uint32_t windowSize = 2 * halfWindow + 1;
         std::vector <T> inp(vecSize + windowSize);
         memset(inp.data(), 0, (windowSize - 1) * sizeof(T));
-        memcpy(inp.data() + windowSize - 1, input.data(), vecSize * sizeof(T));
-        output.resize(vecSize);
+        memcpy(inp.data() + windowSize - 1, input, vecSize * sizeof(T));
 
-        switch (method) {
-            case ParallelMethod::NONE: {
-                filtKernel(output.data(), inp.data(), (uint32_t) vecSize,
-                           halfWindow);
-                break;
-            }
-            case ParallelMethod::CPU: {
+                filtKernel(output, inp.data(), (uint32_t) vecSize,
+                           halfWindow, true);
+//                break;
+//            }
+}
+//            case ParallelMethod::CPU: {
                 // const uint32_t lenFrames =
                 // (uint32_t)ceilf((T)vecSize / NUM_THREADS);
                 // Concurrency::parallel_for(
@@ -109,26 +114,38 @@ namespace utils {
                 //                    (uint32_t)vecSize - i, halfWindow);
                 //     });
 
-                const uint32_t lenFrames =
-                        (uint32_t) ceilf((T) vecSize / (float) NUM_THREADS);
+//                const uint32_t lenFrames =
+//                        (uint32_t) ceilf((T) vecSize / (float) NUM_THREADS);
+//
+//#pragma omp parallel for
+//                for (uint32_t i = 0; i < vecSize; i += lenFrames) {
+//                    uint32_t end = i + lenFrames;
+//                    if (end > vecSize)
+//                        end = vecSize;
+//
+//                    filtKernel(output + i, inp.data() + i, end - i,
+//                               halfWindow);
+//                }
+//                break;
+//            }
+//            case ParallelMethod::GPU: {
+//                break;
+//            }
+//        }
+//        output.resize(vecSize);
+//    }
 
-#pragma omp parallel for
-                for (uint32_t i = 0; i < vecSize; i += lenFrames) {
-                    uint32_t end = i + lenFrames;
-                    if (end > vecSize)
-                        end = vecSize;
-
-                    filtKernel(output.data() + i, inp.data() + i, end - i,
-                               halfWindow);
-                }
-                break;
-            }
-            case ParallelMethod::GPU: {
-                break;
-            }
-        }
-        output.resize(vecSize);
+    template<typename T>
+    void movingFilter(
+            std::vector <T> &output,
+            const std::vector <T> &input,
+            const uint32_t halfWindow,
+            void (&filtKernel)(T[], const T[], const uint32_t, const uint32_t, const bool)){
+        const size_t vectorSize = input.size();
+        output.resize(vectorSize);
+        return utils::movingFilter(output.data(), input.data(), vectorSize, filtKernel);
     }
+
 }  // namespace utils
 
-#endif  // MEDIANFILTER_H
+#endif

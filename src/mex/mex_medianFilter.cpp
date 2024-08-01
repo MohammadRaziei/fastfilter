@@ -16,7 +16,7 @@
 #include "mex.hpp"
 #include "mexAdapter.hpp"
 
-#include "arrayProduct.h"
+#include "medianFilter.h"
 
 class MexFunction : public matlab::mex::Function {
 private:

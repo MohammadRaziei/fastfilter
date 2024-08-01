@@ -1,1 +1,1 @@
-mex -Iinclude -Isrc src/mex/mex_arrayProduct.cpp src/arrayProduct.cpp -output arrayProduct
+mex -Iinclude -Isrc src/mex/mex_medianFilter.cpp -output medianFilter
