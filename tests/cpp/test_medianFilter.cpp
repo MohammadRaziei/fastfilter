@@ -19,19 +19,6 @@ namespace fs = std::filesystem;
 const fs::path CURRENT_WORK_DIR = fs::path(__FILE__).parent_path();
 
 
-// class MedianFilterTest : public ::testing::Test {
-// protected:
-//     void SetUp() override {
-//         input = {1.0, 2.0, 3.0, 4.0};
-//     }
-
-//     void TearDown() override {
-//         input.clear();
-//     }
-
-//     std::vector<double> input;
-// };
-
 TEST(sortedInOut, test1) {
   const size_t size = 5;
   float a[size + 1] = {0, 0, 0, 0, 3}; // Last element is a dummy
@@ -56,6 +43,7 @@ struct TestCase {
     std::vector<float> input;
     std::vector<float> output;
     size_t windowSize;
+    std::string kernel;
 };
 
 
@@ -77,6 +65,7 @@ std::vector<TestCase> parse_json(const std::string& filename) {
         testCase.input = item["input"].get<std::vector<float>>();
         testCase.output = item["output"].get<std::vector<float>>();
         testCase.windowSize = item["windowSize"].get<size_t>();
+        testCase.kernel = item["kernel"].get<std::string>();
 
         test_cases.emplace_back(testCase);
     }
@@ -85,29 +74,29 @@ std::vector<TestCase> parse_json(const std::string& filename) {
 }
 
 
-class MedfiltTest : public ::testing::TestWithParam<TestCase> {};
+class MovfiltTest : public ::testing::TestWithParam<TestCase> {};
 
 
 INSTANTIATE_TEST_SUITE_P(
-        MedfiltTests,
-        MedfiltTest,
+        MovfiltTests,
+        MovfiltTest,
         ::testing::ValuesIn(parse_json(
                 (CURRENT_WORK_DIR.parent_path() / "data.json").string())));
 
 
 
-TEST_P(MedfiltTest, MedfiltFunction) {
+TEST_P(MovfiltTest, MovfiltFunction) {
     auto& tc = GetParam();
     // Assuming medfilt is a function that takes a vector<int> and returns a vector<int>
     std::vector<float> output;
-    filt::movingFilter(output, tc.input, tc.windowSize/2, filt::kernel::median);
+    filt::movingFilter(output, tc.input, tc.windowSize / 2, filt::kernels<float>[tc.kernel]);
     ASSERT_EQ(output, tc.output);
 }
 
-TEST_P(MedfiltTest, MedfiltFunctionInplace) {
+TEST_P(MovfiltTest, MovfiltFunctionInplace) {
     auto& tc = GetParam();
     // Assuming medfilt is a function that takes a vector<int> and returns a vector<int>
     std::vector<float> output = tc.input;
-    filt::movingFilter(output, output, tc.windowSize / 2, filt::kernel::median);
+    filt::movingFilter(output, output, tc.windowSize / 2, filt::kernels<float>[tc.kernel]);
     ASSERT_EQ(output, tc.output);
 }

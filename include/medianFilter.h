@@ -16,9 +16,9 @@ namespace utils{
 
     template<typename T>
     inline void sortedInOut(T sortedData[],
-                            const uint32_t len,
-                            const T &outValue,
-                            const T &inValue) {
+            const uint32_t len,
+            const T &outValue,
+            const T &inValue) {
         bool TasksOut = true, TasksIn = true;
         if (outValue == inValue)
             return;
@@ -52,11 +52,11 @@ namespace filt {
         using KernelType = void (*)(T[], const T[], const uint32_t, const uint32_t, const bool);
 
         template<typename T>
-        inline void movingAverage(T output[],
-                                              const T input[],
-                                              const uint32_t len,
-                                              const uint32_t halfWindow,
-                                              const bool fromScratch=true) {
+        inline void average(T output[],
+                const T input[],
+                const uint32_t len,
+                const uint32_t halfWindow,
+                const bool fromScratch=true) {
             const uint32_t windowSize = 2 * halfWindow + 1;
             T sum = 0;
             if (!fromScratch) {
@@ -73,10 +73,10 @@ namespace filt {
 
         template<typename T>
         inline void median(T output[],
-                                       const T input[],
-                                       const uint32_t len,
-                                       const uint32_t halfWindow,
-                                       const bool fromScratch = true) {
+                const T input[],
+                const uint32_t len,
+                const uint32_t halfWindow,
+                const bool fromScratch = true) {
             const uint32_t windowSize = 2 * halfWindow + 1;
             T *temp = new T[windowSize + 1];
             memcpy(temp, input, windowSize * sizeof(T));
@@ -161,7 +161,7 @@ namespace filt {
     template<typename T>
     std::map<std::string, kernel::KernelType<T>> kernels{
             {"median", kernel::median},
-            {"movingAverage", kernel::movingAverage}
+            {"average", kernel::average}
         };
 }  // namespace filt
 
