@@ -21,8 +21,15 @@ test_data = parse_json(CURRENT_WORK_DIR.parent / "data.json")
 
 # Use pytest's parametrize decorator to feed multiple sets of inputs into the test function
 @pytest.mark.parametrize("input_data, expected_output, windowSize, kernel", test_data)
-def test_medfilt_function(input_data, expected_output, windowSize, kernel):
+def test_movfilt_function(input_data, expected_output, windowSize, kernel):
     output = filt.movingfilter(input_data, windowSize//2, kernel)
     assert output == expected_output
+
+#
+@pytest.mark.parametrize("input_data, expected_output, windowSize, kernel", test_data)
+def test_movfilt_function_inplace(input_data, expected_output, windowSize, kernel):
+    input_save = input_data.copy()
+    output = filt.movingfilter(input_data, windowSize//2, kernel)
+    assert input_save != output or input_data == input_save
 
 #
