@@ -12,37 +12,7 @@
 //    NONE, CPU, GPU
 //};
 
-namespace utils{
 
-    template<typename T>
-    inline void sortedInOut(T sortedData[],
-            const uint32_t len,
-            const T &outValue,
-            const T &inValue) {
-        bool TasksOut = true, TasksIn = true;
-        if (outValue == inValue)
-            return;
-        //    std::vector<T> sortedData(len + 1);
-        //    std::copy_n(sortedData2, len + 1, sortedData.data());
-        sortedData[len] = inValue;
-        T value = sortedData[0], saveValue;
-        for (uint32_t j = 0, i = 0; (TasksOut || TasksIn) && i < len; ++i) {
-            if (TasksOut && value == outValue) {
-                value = sortedData[++j];
-                TasksOut = false;
-            }
-            if (TasksIn && value >= inValue) {
-                sortedData[i] = inValue;
-                TasksIn = false;
-            } else {
-                saveValue = value;
-                value = sortedData[++j];
-
-                sortedData[i] = saveValue;
-            }
-        }
-    }
-}
 
 
 namespace filt {
@@ -50,6 +20,84 @@ namespace filt {
     namespace kernel {
         template<typename T>
         using KernelType = void (*)(T[], const T[], const uint32_t, const uint32_t, const bool);
+
+
+        namespace utils{
+            template<typename T>
+            inline void sortedInOut(T sortedData[],
+                    const uint32_t len,
+                    const T &outValue,
+                    const T &inValue) {
+                bool TasksOut = true, TasksIn = true;
+                if (outValue == inValue)
+                    return;
+                //    std::vector<T> sortedData(len + 1);
+                //    std::copy_n(sortedData2, len + 1, sortedData.data());
+                sortedData[len] = inValue;
+                T value = sortedData[0], saveValue;
+                for (uint32_t j = 0, i = 0; (TasksOut || TasksIn) && i < len; ++i) {
+                    if (TasksOut && value == outValue) {
+                        value = sortedData[++j];
+                        TasksOut = false;
+                    }
+                    if (TasksIn && value >= inValue) {
+                        sortedData[i] = inValue;
+                        TasksIn = false;
+                    } else {
+                        saveValue = value;
+                        value = sortedData[++j];
+
+                        sortedData[i] = saveValue;
+                    }
+                }
+            }
+
+
+
+            template<typename T>
+            inline void sortBasedKernel(T output[],
+                    const T input[],
+                    const uint32_t len,
+                    const uint32_t halfWindow,
+                    T (*arrayReducerFunc)(const T arr[], const uint32_t len),
+                    const bool fromScratch = true) {
+                const uint32_t windowSize = 2 * halfWindow + 1;
+                T *temp = new T[windowSize + 1];
+                memcpy(temp, input, windowSize * sizeof(T));
+
+                if (!fromScratch) {
+                    std::sort(temp, temp + windowSize);
+                }
+                output[0] = arrayReducerFunc(temp, windowSize);
+                for (uint32_t i = 0; i < len - 1; ++i) {
+                    utils::sortedInOut(temp, windowSize, input[i], input[i + windowSize]);
+                    output[i + 1] = arrayReducerFunc(temp, windowSize);
+                }
+                delete[] temp;
+            }
+
+            template <typename T>
+            T medianArray(const T arr[], const uint32_t len){
+                const auto len2 = len / 2;
+                if (len & 1){
+                    return arr[len2];
+                } else {
+                    return (arr[len2] + arr[len2 - 1]) / 2;
+                }
+            }
+
+            template <typename T>
+            T maxArray(const T arr[], const uint32_t len){
+                return arr[len - 1];
+
+            }
+
+            template <typename T>
+            T minArray(const T arr[], const uint32_t len){
+                return arr[0];
+
+            }
+        }
 
         template<typename T>
         inline void average(T output[],
@@ -73,24 +121,33 @@ namespace filt {
 
         template<typename T>
         inline void median(T output[],
-                const T input[],
-                const uint32_t len,
-                const uint32_t halfWindow,
-                const bool fromScratch = true) {
-            const uint32_t windowSize = 2 * halfWindow + 1;
-            T *temp = new T[windowSize + 1];
-            memcpy(temp, input, windowSize * sizeof(T));
-
-            if (!fromScratch) {
-                std::sort(temp, temp + windowSize);
-            }
-            output[0] = temp[halfWindow];
-            for (uint32_t i = 0; i < len - 1; ++i) {
-                utils::sortedInOut(temp, windowSize, input[i], input[i + windowSize]);
-                output[i + 1] = temp[halfWindow];
-            }
-            delete[] temp;
+                           const T input[],
+                           const uint32_t len,
+                           const uint32_t halfWindow,
+                           const bool fromScratch = true) {
+            kernel::utils::sortBasedKernel(output, input, len, halfWindow,
+                                           kernel::utils::medianArray, fromScratch);
         }
+
+        template<typename T>
+        inline void maximum(T output[],
+                        const T input[],
+                        const uint32_t len,
+                        const uint32_t halfWindow,
+                        const bool fromScratch = true) {
+            kernel::utils::sortBasedKernel(output, input, len, halfWindow,
+                                           kernel::utils::maxArray, fromScratch);
+        }
+        template<typename T>
+        inline void minimum(T output[],
+                        const T input[],
+                        const uint32_t len,
+                        const uint32_t halfWindow,
+                        const bool fromScratch = true) {
+            kernel::utils::sortBasedKernel(output, input, len, halfWindow,
+                                           kernel::utils::minArray, fromScratch);
+        }
+
 
     }
 
@@ -161,7 +218,9 @@ namespace filt {
     template<typename T>
     std::map<std::string, kernel::KernelType<T>> kernels{
             {"median", kernel::median},
-            {"average", kernel::average}
+            {"average", kernel::average},
+            {"maximum", kernel::maximum},
+            {"minimum", kernel::minimum}
         };
 }  // namespace filt
 

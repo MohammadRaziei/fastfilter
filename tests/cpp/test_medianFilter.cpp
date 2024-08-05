@@ -27,7 +27,7 @@ TEST(sortedInOut, test1) {
   const float expected[size] = {0, 0, 0, 3, 5};
 
   // Call the function 
-  utils::sortedInOut(a, size, aout, ain);
+  filt::kernel::utils::sortedInOut(a, size, aout, ain);
 
   // Check the results
   ASSERT_TRUE(std::equal(expected, expected + size, a));
