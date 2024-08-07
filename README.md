@@ -12,4 +12,5 @@ ctest --test-dir build
 ## All files that has been modified
 
 ```bash
+medianFilter.h
 ```

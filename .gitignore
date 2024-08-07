@@ -36,3 +36,11 @@ node_modules/
 tests-old
 __pycache__
 Testing
+
+# Ignore my test codes
+my-codes
+
+# Ignore .ipynb files
+.ipynb*
+
+

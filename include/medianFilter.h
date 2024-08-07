@@ -63,16 +63,25 @@ namespace filt {
                     const bool fromScratch = true) {
                 const uint32_t windowSize = 2 * halfWindow + 1;
                 T *temp = new T[windowSize + 1];
-                memcpy(temp, input, windowSize * sizeof(T));
+                //memcpy(temp, input, windowSize * sizeof(T));
+
+				memset(temp, 0, (windowSize + 1) * sizeof(T));
+				temp[windowSize - 1] = input[0]; 
 
                 if (!fromScratch) {
                     std::sort(temp, temp + windowSize);
                 }
                 output[0] = arrayReducerFunc(temp, windowSize);
-                for (uint32_t i = 0; i < len - 1; ++i) {
-                    utils::sortedInOut(temp, windowSize, input[i], input[i + windowSize]);
-                    output[i + 1] = arrayReducerFunc(temp, windowSize);
-                }
+				
+				for (uint32_t i = 1; i < windowSize; ++i) { 
+					utils::sortedInOut(temp, windowSize, static_cast<T>(0), input[i]);
+					output[i] = arrayReducerFunc(temp, windowSize); 
+				}
+
+                for (uint32_t i = windowSize; i < len; ++i) {
+                    utils::sortedInOut(temp, windowSize, input[i - windowSize], input[i]);
+                    output[i] = arrayReducerFunc(temp, windowSize);
+				}
                 delete[] temp;
             }
 
@@ -160,11 +169,11 @@ namespace filt {
             kernel::KernelType<T> filtKernel){
 //            const ParallelMethod &method = ParallelMethod::NONE)
         const uint32_t windowSize = 2 * halfWindow + 1;
-        std::vector <T> inp(vecSize + windowSize);
-        memset(inp.data(), 0, (windowSize - 1) * sizeof(T));
-        memcpy(inp.data() + windowSize - 1, input, vecSize * sizeof(T));
+//        std::vector <T> inp(vecSize + windowSize);
+//        memset(inp.data(), 0, (windowSize - 1) * sizeof(T));
+//        memcpy(inp.data() + windowSize - 1, input, vecSize * sizeof(T));
 
-                filtKernel(output, inp.data(), (uint32_t) vecSize,
+                filtKernel(output, input, (uint32_t) vecSize,
                            halfWindow, true);
 //                break;
 //            }
