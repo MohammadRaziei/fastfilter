@@ -120,12 +120,19 @@ namespace filt {
                 for (uint32_t i = 1; i < windowSize - 1; ++i)
                     sum += input[i];
             }
-            sum += input[windowSize - 1];
-            output[0] = sum / windowSize;
-            for (uint32_t i = 0; i < len - 1; ++i) {
-                sum += (input[i + windowSize] - input[i]);
-                output[i + 1] = sum / windowSize;
-            }
+            //sum += input[windowSize - 1];
+
+			// padding part process
+			for (uint32_t i = 0; i < windowSize; ++i) { 
+				sum += (input[i] - 0); 
+				output[i] = sum / windowSize; 
+			}
+
+			// main part process
+			for (uint32_t i = windowSize; i < len; ++i) {
+				sum += (input[i] - input[i - windowSize]); 
+				output[i] = sum / windowSize; 
+			}
         }
 
         template<typename T>
