@@ -62,24 +62,29 @@ namespace filt {
                     T (*arrayReducerFunc)(const T arr[], const uint32_t len),
                     const bool fromScratch = true) {
                 const uint32_t windowSize = 2 * halfWindow + 1;
-                T *temp = new T[windowSize + 1];
-                //memcpy(temp, input, windowSize * sizeof(T));
+                T *temp = new T[windowSize + 1];		// for keeping sorted array
+				T *temp2 = new T[windowSize];			// for keeping previous window
 
 				memset(temp, 0, (windowSize + 1) * sizeof(T));
 				temp[windowSize - 1] = input[0]; 
+			
+				memcpy(temp2, input, windowSize * sizeof(T)); 
 
                 if (!fromScratch) {
                     std::sort(temp, temp + windowSize);
                 }
                 output[0] = arrayReducerFunc(temp, windowSize);
 				
+				// padding part process
 				for (uint32_t i = 1; i < windowSize; ++i) { 
 					utils::sortedInOut(temp, windowSize, static_cast<T>(0), input[i]);
 					output[i] = arrayReducerFunc(temp, windowSize); 
 				}
 
+				// main part process
                 for (uint32_t i = windowSize; i < len; ++i) {
-                    utils::sortedInOut(temp, windowSize, input[i - windowSize], input[i]);
+					utils::sortedInOut(temp, windowSize, temp2[i % windowSize], input[i]); 
+					temp2[i % windowSize] = input[i]; 
                     output[i] = arrayReducerFunc(temp, windowSize);
 				}
                 delete[] temp;
@@ -121,6 +126,9 @@ namespace filt {
                     sum += input[i];
             }
             //sum += input[windowSize - 1];
+				
+			T *temp2 = new T[windowSize]; 
+			memcpy(temp2, input, windowSize * sizeof(T)); 
 
 			// padding part process
 			for (uint32_t i = 0; i < windowSize; ++i) { 
@@ -129,8 +137,9 @@ namespace filt {
 			}
 
 			// main part process
-			for (uint32_t i = windowSize; i < len; ++i) {
-				sum += (input[i] - input[i - windowSize]); 
+			for (uint32_t i = windowSize; i < len; ++i) { 
+				sum += (input[i] - temp2[i % windowSize]); 
+				temp2[i % windowSize] = input[i]; 
 				output[i] = sum / windowSize; 
 			}
         }
