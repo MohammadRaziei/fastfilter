@@ -14,7 +14,6 @@
 
 
 
-
 namespace filt {
 
     namespace kernel {
@@ -121,10 +120,10 @@ namespace filt {
                 const bool fromScratch=true) {
             const uint32_t windowSize = 2 * halfWindow + 1;
             T sum = 0;
-            if (!fromScratch) {
+            /*if (!fromScratch) {
                 for (uint32_t i = 1; i < windowSize - 1; ++i)
                     sum += input[i];
-            }
+            }*/
             //sum += input[windowSize - 1];
 				
 			T *temp2 = new T[windowSize]; 
@@ -190,7 +189,7 @@ namespace filt {
 //        memcpy(inp.data() + windowSize - 1, input, vecSize * sizeof(T));
 
                 filtKernel(output, input, (uint32_t) vecSize,
-                           halfWindow, true);
+                           halfWindow, false);
 //                break;
 //            }
 }
