@@ -19,18 +19,31 @@ halfWindowSize = kernelSize // 2
 
 testCases = [np.random.randint(minElement, maxElement, np.random.randint(minSize, maxSize)) for i in range(dataNum)]
 
+def movingAverageFilter(a, kernelSize):
+    out =  np.convolve(a, np.ones(kernelSize) / kernelSize, mode='full')
+    out = out[:a.shape[0]]
+    return out
+
+def medianFilter(a, kernelSize):
+    input = np.insert(a, 0, np.zeros(2))
+    output = scipy.signal.medfilt(input, kernelSize)
+    output = output[:a.shape[0]]
+    return output
+
 
 @pytest.mark.parametrize("a", testCases)
-def movingAverageFilter(a):
+def test_movingAverageFilter(a):
     output1 = filt.movingfilter(a, kernelSize // 2, 'average')
-    output2 = np.convolve(a, np.ones(kernelSize) / kernelSize, mode='same')
-    assert (output1[halfWindowSize:] == output2[:-halfWindowSize]).any()
+    output1 = np.array(output1).astype(np.float16)
+    output2 = movingAverageFilter(a, kernelSize).astype(np.float16)
+    assert np.array_equal(output1, output2)
 
 
 @pytest.mark.parametrize("a", testCases)
-def medianFilter(a):
+def test_medianFilter(a):
     output1 = filt.movingfilter(a, kernelSize // 2, 'median')
-    output2 = scipy.signal.medfilt(a, kernelSize)
-    assert (output1[halfWindowSize:] == output2[:-halfWindowSize]).all()
+    output1 = np.array(output1).astype(np.float16)
+    output2 = medianFilter(a, kernelSize).astype(np.float16)
+    assert np.array_equal(output1, output2)
 
 
