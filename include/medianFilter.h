@@ -61,32 +61,24 @@ namespace filt {
                     T (*arrayReducerFunc)(const T arr[], const uint32_t len),
                     const bool fromScratch = true) {
                 const uint32_t windowSize = 2 * halfWindow + 1;
-                T *temp = new T[windowSize + 1];		// for keeping sorted array
-				T *temp2 = new T[windowSize];			// for keeping previous window
+                T *window = new T[windowSize + 1];		// for keeping sorted array
+				T *buffer = new T[windowSize];			// for keeping previous window
 
-				memset(temp, 0, (windowSize + 1) * sizeof(T));
-				temp[windowSize - 1] = input[0]; 
-			
-				memcpy(temp2, input, windowSize * sizeof(T)); 
+				memset(window, 0, (windowSize + 1) * sizeof(T));
+				memset(buffer, 0, (windowSize) * sizeof(T)); 
 
                 if (!fromScratch) {
-                    std::sort(temp, temp + windowSize);
+                    std::sort(window, window + windowSize);
                 }
-                output[0] = arrayReducerFunc(temp, windowSize);
-				
-				// padding part process
-				for (uint32_t i = 1; i < windowSize; ++i) { 
-					utils::sortedInOut(temp, windowSize, static_cast<T>(0), input[i]);
-					output[i] = arrayReducerFunc(temp, windowSize); 
-				}
 
 				// main part process
-                for (uint32_t i = windowSize; i < len; ++i) {
-					utils::sortedInOut(temp, windowSize, temp2[i % windowSize], input[i]); 
-					temp2[i % windowSize] = input[i]; 
-                    output[i] = arrayReducerFunc(temp, windowSize);
+                for (uint32_t i = 0; i < len; ++i) {
+					utils::sortedInOut(window, windowSize, buffer[i % windowSize], input[i]); 
+					buffer[i % windowSize] = input[i]; 
+                    output[i] = arrayReducerFunc(window, windowSize);
 				}
-                delete[] temp;
+                delete[] window;
+				delete[] buffer; 
             }
 
             template <typename T>
@@ -120,27 +112,21 @@ namespace filt {
                 const bool fromScratch=true) {
             const uint32_t windowSize = 2 * halfWindow + 1;
             T sum = 0;
-            /*if (!fromScratch) {
+            if (!fromScratch) {
                 for (uint32_t i = 1; i < windowSize - 1; ++i)
                     sum += input[i];
-            }*/
-            //sum += input[windowSize - 1];
+            }
 				
-			T *temp2 = new T[windowSize]; 
-			memcpy(temp2, input, windowSize * sizeof(T)); 
-
-			// padding part process
-			for (uint32_t i = 0; i < windowSize; ++i) { 
-				sum += (input[i] - 0); 
-				output[i] = sum / windowSize; 
-			}
+			T *buffer = new T[windowSize]; 
+			memset(buffer, 0, (windowSize) * sizeof(T)); 
 
 			// main part process
-			for (uint32_t i = windowSize; i < len; ++i) { 
-				sum += (input[i] - temp2[i % windowSize]); 
-				temp2[i % windowSize] = input[i]; 
+			for (uint32_t i = 0; i < len; ++i) { 
+				sum += (input[i] - buffer[i % windowSize]); 
+				buffer[i % windowSize] = input[i]; 
 				output[i] = sum / windowSize; 
 			}
+			delete[] buffer; 
         }
 
         template<typename T>
@@ -184,14 +170,8 @@ namespace filt {
             kernel::KernelType<T> filtKernel){
 //            const ParallelMethod &method = ParallelMethod::NONE)
         const uint32_t windowSize = 2 * halfWindow + 1;
-//        std::vector <T> inp(vecSize + windowSize);
-//        memset(inp.data(), 0, (windowSize - 1) * sizeof(T));
-//        memcpy(inp.data() + windowSize - 1, input, vecSize * sizeof(T));
-
-                filtKernel(output, input, (uint32_t) vecSize,
-                           halfWindow, false);
-//                break;
-//            }
+        filtKernel(output, input, (uint32_t) vecSize,
+                   halfWindow, true);
 }
 //            case ParallelMethod::CPU: {
                 // const uint32_t lenFrames =
