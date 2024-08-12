@@ -68,7 +68,7 @@ namespace filt {
                 T *window = new T[windowSize + 1];		// for keeping sorted array
 				T *buffer = new T[windowSize];			// for keeping previous window
 
-				std::fill(window, window + windowSize + 1, paddingVal); 
+				std::fill(window, window + windowSize, paddingVal); 
 				std::fill(buffer, buffer + windowSize, paddingVal); 
 
                 if (!fromScratch) {
@@ -154,7 +154,7 @@ namespace filt {
                         const bool fromScratch = true) {
             kernel::utils::sortBasedKernel(output, input, len, halfWindow,
                                            kernel::utils::maxArray, fromScratch,
-										   -std::numeric_limits<T>::infinity());
+										   std::numeric_limits<T>::lowest());
         }
         template<typename T>
         inline void minimum(T output[],
@@ -164,7 +164,7 @@ namespace filt {
                         const bool fromScratch = true) {
             kernel::utils::sortBasedKernel(output, input, len, halfWindow,
                                            kernel::utils::minArray, fromScratch, 
-										   std::numeric_limits<T>::infinity());
+										   std::numeric_limits<T>::max());
         }
 
 
