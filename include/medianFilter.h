@@ -7,6 +7,7 @@
 #include <stdint.h>
 #include <algorithm>
 #include <map>
+#include <limits>
 
 //enum class ParallelMethod {
 //    NONE, CPU, GPU
@@ -59,13 +60,16 @@ namespace filt {
                     const uint32_t len,
                     const uint32_t halfWindow,
                     T (*arrayReducerFunc)(const T arr[], const uint32_t len),
-                    const bool fromScratch = true) {
+                    const bool fromScratch = true, 
+					const T paddingVal = std::numeric_limits<T>::infinity()
+					) {
+
                 const uint32_t windowSize = 2 * halfWindow + 1;
                 T *window = new T[windowSize + 1];		// for keeping sorted array
 				T *buffer = new T[windowSize];			// for keeping previous window
 
-				memset(window, 0, (windowSize + 1) * sizeof(T));
-				memset(buffer, 0, (windowSize) * sizeof(T)); 
+				std::fill(window, window + windowSize + 1, paddingVal); 
+				std::fill(buffer, buffer + windowSize, paddingVal); 
 
                 if (!fromScratch) {
                     std::sort(window, window + windowSize);
@@ -109,7 +113,9 @@ namespace filt {
                 const T input[],
                 const uint32_t len,
                 const uint32_t halfWindow,
-                const bool fromScratch=true) {
+                const bool fromScratch = true
+				) {
+
             const uint32_t windowSize = 2 * halfWindow + 1;
             T sum = 0;
             if (!fromScratch) {
@@ -136,7 +142,8 @@ namespace filt {
                            const uint32_t halfWindow,
                            const bool fromScratch = true) {
             kernel::utils::sortBasedKernel(output, input, len, halfWindow,
-                                           kernel::utils::medianArray, fromScratch);
+                                           kernel::utils::medianArray, fromScratch, 
+										   static_cast<T>(0));
         }
 
         template<typename T>
@@ -146,7 +153,8 @@ namespace filt {
                         const uint32_t halfWindow,
                         const bool fromScratch = true) {
             kernel::utils::sortBasedKernel(output, input, len, halfWindow,
-                                           kernel::utils::maxArray, fromScratch);
+                                           kernel::utils::maxArray, fromScratch,
+										   -std::numeric_limits<T>::infinity());
         }
         template<typename T>
         inline void minimum(T output[],
@@ -155,7 +163,8 @@ namespace filt {
                         const uint32_t halfWindow,
                         const bool fromScratch = true) {
             kernel::utils::sortBasedKernel(output, input, len, halfWindow,
-                                           kernel::utils::minArray, fromScratch);
+                                           kernel::utils::minArray, fromScratch, 
+										   std::numeric_limits<T>::infinity());
         }
 
 
