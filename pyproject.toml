@@ -6,7 +6,7 @@ build-backend = "scikit_build_core.build"
 
 [project]
 name = "medianFilter"
-version = "0.0.1"
+version = "0.0.2"
 description = "A state of the art C++ binding example for C++, Python and Matlab"
 readme = "README.md"
 authors = [
@@ -29,7 +29,11 @@ dependencies = [
 ]
 
 [project.optional-dependencies]
-test = ["pytest"]
+test = [
+    "pytest",
+    "numpy",
+    "scipy"
+]
 
 
 [project.urls]
