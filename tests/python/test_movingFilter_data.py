@@ -33,7 +33,7 @@ def parse_json(filename):
     return [(item["input"], item["output"], item["windowSize"], item["kernel"]) for item in data]
 
 # Load test cases
-test_data = parse_json(CURRENT_WORK_DIR.parent / "data.json")
+test_data = parse_json(CURRENT_WORK_DIR.parent / "movingfilter-data.json")
 
 # Use pytest's parametrize decorator to feed multiple sets of inputs into the test function
 @pytest.mark.parametrize("input_data, expected_output, windowSize, kernel", test_data)
