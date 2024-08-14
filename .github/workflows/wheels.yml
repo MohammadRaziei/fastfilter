@@ -50,7 +50,7 @@ jobs:
     steps:
     - uses: actions/checkout@v3
       with:
-        submodules: true
+        submodules: false
 
     - name: Build wheels
       uses: pypa/cibuildwheel@v2.16.5
