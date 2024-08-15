@@ -1,12 +1,12 @@
 #!/bin/python3
 from __future__ import annotations
 
-import pytest
 import numpy as np
+import pytest
+import scipy
 import scipy.signal
 
-import medianFilter as filt # Assuming this is the module where your filter function is defined
-import scipy
+import medianFilter as filt  # Assuming this is the module where your filter function is defined
 
 maxHalfWinSize = 10
 minSize = maxHalfWinSize * 2 + 1
@@ -20,26 +20,22 @@ testCases = (np.random.randint(minElement, maxElement, np.random.randint(minSize
 
 def movingAverageFilter(a, kernelSize):
     out =  np.convolve(a, np.ones(kernelSize) / kernelSize, mode='full')
-    out = out[:a.shape[0]]
-    return out
+    return out[:a.shape[0]]
 
 def medianFilter(a, kernelSize):
     inp = np.insert(a, 0, np.zeros(kernelSize // 2))
     output = scipy.signal.medfilt(inp, kernelSize)
-    output = output[:a.shape[0]]
-    return output
+    return output[:a.shape[0]]
 
 def maximumFilter(a, kernelSize):
     inp = np.insert(a, 0, np.full(kernelSize // 2, -np.inf))
     output = scipy.ndimage.maximum_filter(inp, size=kernelSize)
-    output = output[:a.shape[0]]
-    return output
+    return output[:a.shape[0]]
 
 def minimumFilter(a, kernelSize):
     inp = np.insert(a, 0, np.full(kernelSize // 2, np.inf))
     output = scipy.ndimage.minimum_filter(inp, size=kernelSize)
-    output = output[:a.shape[0]]
-    return output
+    return output[:a.shape[0]]
 
 pyMovingFilter= {
     "median": medianFilter,

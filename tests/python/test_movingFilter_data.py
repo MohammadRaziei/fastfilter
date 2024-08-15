@@ -2,12 +2,13 @@
 from __future__ import annotations
 
 import json
-import pytest
 from pathlib import Path
-import medianFilter as filt # Assuming this is the module where your filter function is defined
 
 import numpy as np
+import pytest
 import scipy
+
+import medianFilter as filt  # Assuming this is the module where your filter function is defined
 
 
 def movingAverageFilter(a, kernelSize):
@@ -27,7 +28,7 @@ CURRENT_WORK_DIR = Path(__file__).parent
 
 # Parse the JSON file and return a list of tuples (input, output, windowSize)
 def parse_json(filename):
-    with open(filename, 'r') as file:
+    with open(filename) as file:
         data = json.load(file)
 
     return [(item["input"], item["output"], item["windowSize"], item["kernel"]) for item in data]
