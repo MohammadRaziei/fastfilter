@@ -65,6 +65,22 @@ namespace window {
 
 		} // enf of parzenWindow
 
+		// 4) Hann window
+		template<typename T>
+		inline void hannWindow(std::vector<T> &output, 
+							   const uint32_t N) {
+			if (N == 1) {
+				output[0] = 1;
+			}
+			else {
+				for (uint32_t i = 0; i < N; ++i) {
+					output[i] = 0.5 * (1 - cos(2 * M_PI * i / (N - 1))); 
+				}
+			}
+			
+		} // end of hannWindow
+
+
 
 
 
@@ -122,7 +138,8 @@ namespace window {
 	std::map<std::string, kernel::WindowType<T>> windows {
 		{"triangular", kernel::triangularWindow}, 
 		{"hamming", kernel::hammingWindow}, 
-		{"parzen", kernel::parzenWindow}
+		{"parzen", kernel::parzenWindow},
+		{"hann", kernel::hannWindow}
 	};
 
 
