@@ -8,16 +8,15 @@ import scipy.signal
 import medianFilter as filt # Assuming this is the module where your filter function is defined
 import scipy
 
-
-minSize = 10
+maxHalfWinSize = 10
+minSize = maxHalfWinSize * 2 + 1
 maxSize = 200
 minElement = -100
 maxElement = 100
-dataNum = 20
-kernelSize = 5
-halfWindowSize = kernelSize // 2
+dataNum = 40
 
-testCases = [np.random.randint(minElement, maxElement, np.random.randint(minSize, maxSize)) for i in range(dataNum)]
+testCases = (np.random.randint(minElement, maxElement, np.random.randint(minSize, maxSize)).astype(np.float32) for i in range(dataNum))
+
 
 def movingAverageFilter(a, kernelSize):
     out =  np.convolve(a, np.ones(kernelSize) / kernelSize, mode='full')
@@ -31,7 +30,7 @@ def medianFilter(a, kernelSize):
     return output
 
 def maximumFilter(a, kernelSize):
-    inp = np.insert(a, 0, -np.full(kernelSize // 2, np.inf))
+    inp = np.insert(a, 0, np.full(kernelSize // 2, -np.inf))
     output = scipy.ndimage.maximum_filter(inp, size=kernelSize)
     output = output[:a.shape[0]]
     return output
@@ -42,35 +41,17 @@ def minimumFilter(a, kernelSize):
     output = output[:a.shape[0]]
     return output
 
+pyMovingFilter= {
+    "median": medianFilter,
+    "average": movingAverageFilter,
+    "minimum": minimumFilter,
+    "maximum": maximumFilter
+}
 
-@pytest.mark.parametrize("a", testCases)
-def test_movingAverageFilter(a):
-    output1 = filt.movingfilter(a, kernelSize // 2, 'average')
-    output1 = np.array(output1).astype(np.float16)
-    output2 = movingAverageFilter(a, kernelSize).astype(np.float16)
-    assert np.array_equal(output1, output2)
-
-
-@pytest.mark.parametrize("a", testCases)
-def test_medianFilter(a):
-    output1 = filt.movingfilter(a, kernelSize // 2, 'median')
-    output1 = np.array(output1).astype(np.float16)
-    output2 = medianFilter(a, kernelSize).astype(np.float16)
-    assert np.array_equal(output1, output2)
-
-
-@pytest.mark.parametrize("a", testCases)
-def test_maximumFilter(a):
-    a = a.astype(float)
-    output1 = filt.movingfilter(a, kernelSize // 2, 'maximum')
-    output1 = np.array(output1).astype(np.float16)
-    output2 = maximumFilter(a, kernelSize).astype(np.float16)
-    assert np.array_equal(output1, output2)
-
-@pytest.mark.parametrize("a", testCases)
-def test_minimumFilter(a):
-    a = a.astype(float)
-    output1 = filt.movingfilter(a, kernelSize // 2, 'minimum')
-    output1 = np.array(output1).astype(np.float16)
-    output2 = minimumFilter(a, kernelSize).astype(np.float16)
-    assert np.array_equal(output1, output2)
+@pytest.mark.parametrize("kernel", pyMovingFilter.keys())
+@pytest.mark.parametrize("hafWinSize", range(1, maxHalfWinSize+1))
+@pytest.mark.parametrize("arr", testCases)
+def test_medianFilter(arr, kernel, hafWinSize):
+    output = filt.movingfilter(arr, hafWinSize, kernel)
+    expected = pyMovingFilter[kernel](arr, hafWinSize*2+1)
+    assert np.allclose(output, expected, atol=1e-6)

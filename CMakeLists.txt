@@ -138,18 +138,20 @@ target_link_libraries(test_${PROJECT_NAME} PRIVATE c${PROJECT_NAME} gtest gtest_
 target_include_directories(test_${PROJECT_NAME} PRIVATE ${PROJECT_SOURCE_DIR}/tests/cpp)
 
 
-# Enable the FetchContent module
-include(FetchContent)
+## Enable the FetchContent module
+#include(FetchContent)
+#
+## Set up the nlohmann_json target
+#FetchContent_Declare(
+#        nlohmann_json
+#        GIT_REPOSITORY https://github.com/nlohmann/json.git
+#        GIT_TAG v3.11.2 # or any other tag/version you prefer
+#)
+#
+## Download and build the library
+#FetchContent_MakeAvailable(nlohmann_json)
 
-# Set up the nlohmann_json target
-FetchContent_Declare(
-        nlohmann_json
-        GIT_REPOSITORY https://github.com/nlohmann/json.git
-        GIT_TAG v3.11.2 # or any other tag/version you prefer
-)
-
-# Download and build the library
-FetchContent_MakeAvailable(nlohmann_json)
+add_subdirectory(tests/third_party/nlohmann_json)
 
 # Link against the nlohmann_json target
 target_link_libraries(test_${PROJECT_NAME} PRIVATE nlohmann_json::nlohmann_json)
