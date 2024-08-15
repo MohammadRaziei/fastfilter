@@ -81,6 +81,20 @@ namespace window {
 		} // end of hannWindow
 
 
+		// 5) Blackman window
+		template<typename T>
+		inline void blackmanWindow(std::vector<T> &output, 
+								   const uint32_t N) {
+			const uint32_t halfSize = N / 2; 
+
+			output[halfSize] = 1; 
+
+			for (uint32_t i = 0; i < halfSize; ++i) {
+				output[i] = 0.42 - 0.5 * cos(2 * M_PI * i / (N - 1)) + 0.08 * cos(4 * M_PI * i / (N - 1));
+				output[N - 1 - i] = 0.42 - 0.5 * cos(2 * M_PI * i / (N - 1)) + 0.08 * cos(4 * M_PI * i / (N - 1));
+			}
+			
+		}
 
 
 
@@ -139,7 +153,8 @@ namespace window {
 		{"triangular", kernel::triangularWindow}, 
 		{"hamming", kernel::hammingWindow}, 
 		{"parzen", kernel::parzenWindow},
-		{"hann", kernel::hannWindow}
+		{"hann", kernel::hannWindow}, 
+		{"blackman", kernel::blackmanWindow}
 	};
 
 
