@@ -2,6 +2,8 @@
 #define WINDOWING_H
 
 #include <vector>
+#include <map>
+#include <cmath>
 
 namespace window {
 	
@@ -23,6 +25,20 @@ namespace window {
 			for (uint32_t i = 0; i < halfSize; ++i) {
 				output[i] = i * step + bias; 
 				output[N - 1 - i] = i * step + bias; 
+			}
+		}
+
+		// 2) Hamming window
+		template<typename T>
+		inline void hammingWindow(std::vector<T> &output, 
+							const int N) {
+			if (N == 1) {
+				output[0] = 1; 
+			}
+			else {
+				for (uint32_t i = 0; i < N; ++i) {
+					output[i] = 0.54 - 0.46 * cos(2 * M_PI * i / (N - 1)); 
+				}	
 			}
 		}
 
@@ -80,7 +96,8 @@ namespace window {
 	// mappping of window name to its function
 	template<typename T>
 	std::map<std::string, kernel::WindowType<T>> windows {
-		{"triangular", kernel::triangularWindow}
+		{"triangular", kernel::triangularWindow}, 
+		{"hamming", kernel::hammingWindow}
 	};
 
 
