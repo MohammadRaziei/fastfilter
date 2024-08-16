@@ -11,6 +11,9 @@ namespace window {
 		template<typename T> 
 		using WindowType = void (*) (std::vector<T>&, const uint32_t);
 
+		template<typename T>
+		using WindowTypeWithParam = void (*) (std::vector<T>&, const uint32_t, const T);
+
 		// 1) Triangular window
 		template<typename T>
 		inline void triangularWindow(std::vector<T> &output, 
@@ -94,8 +97,24 @@ namespace window {
 				output[N - 1 - i] = 0.42 - 0.5 * cos(2 * M_PI * i / (N - 1)) + 0.08 * cos(4 * M_PI * i / (N - 1));
 			}
 			
-		}
+		} // end of blackman window
 
+		// 6) Gaussian window
+		template<typename T>
+		inline void gaussianWindow(std::vector<T> &output, 
+								   const uint32_t N, 
+								   const T parameter) {
+			const uint32_t halfSize = N / 2; 
+			
+			const T bias = (N % 2 == 0) ? 0.5 : 1;
+
+			output[halfSize] = 1;
+
+			for (uint32_t i = 0; i < halfSize; ++i) {
+				output[halfSize - 1 - i] = std::exp(-0.5 * std::pow(parameter * 2 * (i + bias) / (N - 1), 2));
+				output[N - halfSize + i] = std::exp(-0.5 * std::pow(parameter * 2 * (i + bias) / (N - 1), 2));
+			}
+		} // end of gaussian window
 
 
 		template<typename T>
@@ -135,8 +154,7 @@ namespace window {
 	void windowFunction(std::vector<T> &output, 
 						std::vector<T> &input, 
 						const uint32_t N, 
-						kernel::WindowType<T> winType
-						) {
+						kernel::WindowType<T> winType) {
 		std::vector<T> window(N); 
 		winType(window, N);
 
@@ -144,6 +162,20 @@ namespace window {
 			output[i] = input[i] * window[i]; 
 		}
 		 
+	}
+
+	template<typename T>
+	inline void windowFunction(std::vector<T> &output, 
+							   const std::vector<T> &input, 
+							   const uint32_t N,
+							   const T parameter, 
+							   kernel::WindowTypeWithParam<T> winType) {
+		std::vector<T> window(N); 
+		winType(window, N, parameter);
+
+		for (uint32_t i = 0; i < N; ++i) {
+			output[i] = input[i] * window[i]; 
+		}
 	}
 
 
@@ -155,6 +187,11 @@ namespace window {
 		{"parzen", kernel::parzenWindow},
 		{"hann", kernel::hannWindow}, 
 		{"blackman", kernel::blackmanWindow}
+	};
+
+	template<typename T>
+	std::map<std::string, kernel::WindowTypeWithParam<T>> windowsWithParam {
+		{"gaussian", kernel::gaussianWindow}
 	};
 
 
