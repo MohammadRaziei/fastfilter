@@ -116,6 +116,29 @@ namespace window {
 			}
 		} // end of gaussian window
 
+		// 7) Tukey window
+		template<typename T>
+		inline void tukeyWindow(std::vector<T> &output, 
+								const uint32_t N, 
+								const T parameter) {
+			const T point1 = parameter * (N - 1) / 2;
+			const T point2 = (1 - parameter / 2) * (N - 1);
+
+			uint32_t i; 
+			for (i = 0; i < point1; ++i) {
+				output[i] = 0.5 * (1 + cos(2 * M_PI / parameter * (i * 1.0 / (N - 1) - parameter / 2.0)));
+			}
+			for (i; i < point2; ++i) {
+				output[i] = 1; 
+			}
+			for (i; i < N; ++i) {
+				output[i] = 0.5 * (1 + cos(2 * M_PI / parameter * (i * 1.0 / (N - 1) - 1 + parameter / 2.0)));
+			}
+			if (N == 1) {
+				output[0] = 1;
+			}
+		} // end of tukey window
+
 
 		template<typename T>
 		T mul(T num1, T num2) {
@@ -191,7 +214,8 @@ namespace window {
 
 	template<typename T>
 	std::map<std::string, kernel::WindowTypeWithParam<T>> windowsWithParam {
-		{"gaussian", kernel::gaussianWindow}
+		{"gaussian", kernel::gaussianWindow},
+		{"tukey", kernel::tukeyWindow}
 	};
 
 

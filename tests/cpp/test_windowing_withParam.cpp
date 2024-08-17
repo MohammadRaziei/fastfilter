@@ -88,7 +88,7 @@ TEST_P(windowWithParamTest, windowFunctionWithParam) {
 	std::vector<float> input(tc.window.size()); 
 	std::copy(tc.input.begin(), tc.input.end(), input.begin());
 	float parameter = tc.parameter[0];
-	window::windowFunction(output, input, output.size(), parameter, window::windowsWithParam<float>["gaussian"]);
+	window::windowFunction(output, input, output.size(), parameter, window::windowsWithParam<float>[tc.windowType]);
    
 	ASSERT_TRUE(compareVectors(output, tc.output));
 }
