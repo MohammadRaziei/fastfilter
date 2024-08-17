@@ -36,21 +36,6 @@ bool compareVectors(const std::vector<T>& vec1, const std::vector<T>& vec2, T ep
 }
 
 
-
-
-
-TEST(windowSub, test1) {
-	const float num1 = 14.0; 
-	const float num2 = 8.0; 
-	float result; 
-	const float expected = 6.0; 
-	result = window::kernel::sub(num1, num2);
-	
-	ASSERT_EQ(expected, result); 
-}
-
-
-
 // A simple structure to hold a pair of vectors for input and output
 struct TestData {
     std::vector<float> input;
@@ -58,8 +43,6 @@ struct TestData {
 	std::vector<float> output;
 	std::string windowType; 
 };
-
-
 
 
 // Parse the JSON file and return a vector of pairs (input, window, output)
@@ -103,15 +86,3 @@ TEST_P(windowTest, windowFunction) {
    
 	ASSERT_TRUE(compareVectors(output, tc.output));
 }
-
-
-/*
-TEST_P(MovfiltTest, MovfiltFunctionInplace2) {
-    auto& tc = GetParam();
-    // Assuming medfilt is a function that takes a vector<int> and returns a vector<int>
-    std::vector<float> output = tc.input;
-    filt::movingFilter(output, output, tc.windowSize / 2, filt::kernels<float>[tc.kernel]);
-    ASSERT_EQ(output, tc.output);
-}
-*/
-
