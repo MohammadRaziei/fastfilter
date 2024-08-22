@@ -136,57 +136,107 @@ import windowFunctions as wf
 
 ## Usage in C++
 
+Integrating `fastfilter` into your C++ projects is simple.
+
+### Applying Filters
+
+You can effortlessly apply various filters to your signal data.
+
+#### Median Filter
 ```cpp
 #include <iostream>
 #include "medianFilter.h"
 
 int main() { 
-	std::vector<float> data {1, 2, 3, 4, 5, 6, 7, 8, 9, 10};
+    std::vector<float> data {1, 2, 3, 4, 5, 6, 7, 8, 9, 10};
 
-	// create output vector and variables
-	std::vector<float> output(data.size());
-	const uint32_t halfWindowSize = 2;
+    // Create output vector and variables
+    std::vector<float> output(data.size());
+    const uint32_t halfWindowSize = 2;
 
-	// main processing
-	filt::movingFilter(output, data, halfWindowSize, filt::kernel::median);
+    // Apply median filter
+    filt::movingFilter(output, data, halfWindowSize, filt::kernel::median);
+
+    // Display the output
+    for (const auto& val : output) {
+        std::cout << val << " ";
+    }
+    std::cout << std::endl;
+
+    return 0;
 }
 ```
 
+#### Median Filter with Different Data
 ```cpp
 #include <iostream>
 #include "medianFilter.h"
 
 int main() { 
-	std::vector<float> data {1, 12, 7, 8, 1, 16, 2, 18, 9, 21};
+    std::vector<float> data {1, 12, 7, 8, 1, 16, 2, 18, 9, 21};
 
-	// create output vector and variables
-	std::vector<float> output(data.size());
-	const uint32_t halfWindowSize = 2;
+    // Create output vector and variables
+    std::vector<float> output(data.size());
+    const uint32_t halfWindowSize = 2;
 
-	// main processing
-	filt::movingFilter(output, data, halfWindowSize, filt::kernel::median);
+    // Apply median filter
+    filt::movingFilter(output, data, halfWindowSize, filt::kernel::median);
+
+    // Display the output
+    for (const auto& val : output) {
+        std::cout << val << " ";
+    }
+    std::cout << std::endl;
+
+    return 0;
 }
 ```
 
+#### Minimum and Maximum Filters
 ```cpp
 #include <iostream>
 #include "medianFilter.h"
 
 int main() { 
-	std::vector<float> data {1, 12, 7, 8, 1, 16, 2, 18, 9, 21};
+    std::vector<float> data {1, 12, 7, 8, 1, 16, 2, 18, 9, 21};
 
-	// create output vector and variables
-	std::vector<float> output(data.size());
-	const uint32_t halfWindowSize = 2;
+    // Create output vector and variables
+    std::vector<float> output(data.size());
+    const uint32_t halfWindowSize = 2;
 
-	// minimum filter
-	filt::movingFilter(output, data, halfWindowSize, filt::kernel::minimum);
+    // Apply minimum filter
+    filt::movingFilter(output, data, halfWindowSize, filt::kernel::minimum);
 
-	// maximum filter
-	filt::movingFilter(output, data, halfWindowSize, filt::kernel::maximum);
+    // Display the output
+    std::cout << "Minimum Filter Output: ";
+    for (const auto& val : output) {
+        std::cout << val << " ";
+    }
+    std::cout << std::endl;
 
+    // Apply maximum filter
+    filt::movingFilter(output, data, halfWindowSize, filt::kernel::maximum);
+
+    // Display the output
+    std::cout << "Maximum Filter Output: ";
+    for (const auto& val : output) {
+        std::cout << val << " ";
+    }
+    std::cout << std::endl;
+
+    return 0;
 }
 ```
+
+### Using Window Functions
+
+```cpp
+// It should be completed later. 
+```
+
+
+
+
 
 
 
