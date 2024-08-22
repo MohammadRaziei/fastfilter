@@ -1,6 +1,6 @@
 <p align="center">
   <a href="https://github.com/mohammadraziei/liburlparser">
-    <img src="https://github.com/MohammadRaziei/liburlparser/raw/master/docs/images/logo/liburlparser-logo-1.svg" alt="Logo">
+    <img src="https://github.com/MohammadRaziei/MedianFilterCpp/blob/ehsan/docs/images/logo/logo-color.svg" alt="Logo">
   </a>
   <h3 align="center">
     Fastest domain extractor library written in C++ with python binding.
