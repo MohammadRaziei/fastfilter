@@ -67,6 +67,37 @@ Here are some key features of **fastfilter**
 
 
 
+## Usage
+
+### Python
+
+you can use fastfilter so intutively
+
+all of classes has help section
+```python
+import medianFilter
+help(medianFilter)
+print(medianFilter.__version__)
+```
+
+```python
+import numpy as np
+import medianFilter as filt
+signal = np.array([1, 2, 3, 4, 5, 6, 7, 8, 9, 10])
+kernelSize = 5
+output = filt.movingfilter(signal, kernelSize // 2, 'average')
+```
+
+
+```python 
+import numpy as np
+import medianFilter as filt
+signal = np.array([1, 12, 7, 8, 1, 16, 2, 18, 9, 21])
+kernelSize = 5
+output = filt.movingfilter(signal, kernelSize // 2, 'median')
+# output = filt.movingfilter(signal, kernelSize // 2, 'maximum')
+# output = filt.movingfilter(signal, kernelSize // 2, 'minimum')
+```
 
 
 
@@ -74,8 +105,72 @@ Here are some key features of **fastfilter**
 
 
 
+## Usage in python
 
+Using `fastfilter` is intuitive and straightforward. Below are some examples to help you get started.
 
+### Accessing Help
+
+All classes come with a help section to guide you through their usage:
+```python
+import medianFilter
+help(medianFilter)
+print(medianFilter.__version__)
+```
+
+### Applying Filters
+
+You can easily apply various filters to your signal data. Here are some examples:
+
+#### Average Filter
+```python
+import numpy as np
+import medianFilter as filt
+
+signal = np.array([1, 2, 3, 4, 5, 6, 7, 8, 9, 10])
+kernelSize = 5
+output = filt.movingfilter(signal, kernelSize // 2, 'average')
+print(output)
+```
+
+#### Median Filter
+```python
+import numpy as np
+import medianFilter as filt
+
+signal = np.array([1, 12, 7, 8, 1, 16, 2, 18, 9, 21])
+kernelSize = 5
+output = filt.movingfilter(signal, kernelSize // 2, 'median')
+print(output)
+```
+
+#### Maximum and Minimum Filters
+```python
+import numpy as np
+import medianFilter as filt
+
+signal = np.array([1, 12, 7, 8, 1, 16, 2, 18, 9, 21])
+kernelSize = 5
+
+# Apply maximum filter
+output_max = filt.movingfilter(signal, kernelSize // 2, 'maximum')
+print(output_max)
+
+# Apply minimum filter
+output_min = filt.movingfilter(signal, kernelSize // 2, 'minimum')
+print(output_min)
+```
+
+### Using Window Functions
+
+You can also apply various window functions to your signal data. Here’s an example of using the Hamming window:
+```python
+import numpy as np
+import windowFunctions as wf
+
+# It should be completed here
+# windowFunctions is not binded yet. 
+```
 
 
 
