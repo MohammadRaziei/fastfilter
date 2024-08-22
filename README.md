@@ -134,6 +134,64 @@ import windowFunctions as wf
 ```
 
 
+## Usage in C++
+
+```cpp
+#include <iostream>
+#include "medianFilter.h"
+
+int main() { 
+	std::vector<float> data {1, 2, 3, 4, 5, 6, 7, 8, 9, 10};
+
+	// create output vector and variables
+	std::vector<float> output(data.size());
+	const uint32_t halfWindowSize = 2;
+
+	// main processing
+	filt::movingFilter(output, data, halfWindowSize, filt::kernel::median);
+}
+```
+
+```cpp
+#include <iostream>
+#include "medianFilter.h"
+
+int main() { 
+	std::vector<float> data {1, 12, 7, 8, 1, 16, 2, 18, 9, 21};
+
+	// create output vector and variables
+	std::vector<float> output(data.size());
+	const uint32_t halfWindowSize = 2;
+
+	// main processing
+	filt::movingFilter(output, data, halfWindowSize, filt::kernel::median);
+}
+```
+
+```cpp
+#include <iostream>
+#include "medianFilter.h"
+
+int main() { 
+	std::vector<float> data {1, 12, 7, 8, 1, 16, 2, 18, 9, 21};
+
+	// create output vector and variables
+	std::vector<float> output(data.size());
+	const uint32_t halfWindowSize = 2;
+
+	// minimum filter
+	filt::movingFilter(output, data, halfWindowSize, filt::kernel::minimum);
+
+	// maximum filter
+	filt::movingFilter(output, data, halfWindowSize, filt::kernel::maximum);
+
+}
+```
+
+
+
+
+
 
 
 # CMAKE MATLAB PYTHON CPP EXAMPLE
