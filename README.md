@@ -140,7 +140,7 @@ Integrating `fastfilter` into your C++ projects is simple.
 
 You can effortlessly apply various filters to your signal data.
 
-#### Median Filter
+#### Average Filter
 ```cpp
 #include <iostream>
 #include "medianFilter.h"
@@ -153,7 +153,7 @@ int main() {
     const uint32_t halfWindowSize = 2;
 
     // Apply median filter
-    filt::movingFilter(output, data, halfWindowSize, filt::kernel::median);
+    filt::movingFilter(output, data, halfWindowSize, filt::kernel::average);
 
     // Display the output
     for (const auto& val : output) {
@@ -165,7 +165,7 @@ int main() {
 }
 ```
 
-#### Median Filter with Different Data
+#### Median Filter 
 ```cpp
 #include <iostream>
 #include "medianFilter.h"
