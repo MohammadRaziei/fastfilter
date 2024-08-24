@@ -81,7 +81,7 @@ INSTANTIATE_TEST_SUITE_P(
         MovfiltTests,
         MovfiltTest,
         ::testing::ValuesIn(parse_json(
-                (CURRENT_WORK_DIR.parent_path() / "data.json").string())));
+                (CURRENT_WORK_DIR.parent_path() / "movingfilter-data.json").string())));
 
 
 
