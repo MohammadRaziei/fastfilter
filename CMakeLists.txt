@@ -131,7 +131,7 @@ enable_testing()
 
 
 add_subdirectory(${CMAKE_CURRENT_SOURCE_DIR}/tests/third_party/googletest)
-file(GLOB TEST_SOURCES ${PROJECT_SOURCE_DIR}/tests/cpp/*.cpp)
+file(GLOB TEST_SOURCES ${PROJECT_SOURCE_DIR}/tests/cpp/test_*.cpp)
 
 add_executable(test_${PROJECT_NAME} ${TEST_SOURCES})
 target_link_libraries(test_${PROJECT_NAME} PRIVATE c${PROJECT_NAME} gtest gtest_main pthread)
