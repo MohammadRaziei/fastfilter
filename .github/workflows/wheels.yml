@@ -58,8 +58,9 @@ jobs:
 #          CIBW_ARCHS_MACOS: universal2
 #          CIBW_ARCHS_WINDOWS: auto ARM64
          # Disable building PyPy wheels on all platforms
-         CIBW_SKIP: pp*
+        CIBW_SKIP: pp*
 #         CIBW_PRERELEASE_PYTHONS: true
+        CIBW_BEFORE_ALL_LINUX: yum install -y libopenblas-dev
 
     - name: Verify clean directory
       run: git diff --exit-code
