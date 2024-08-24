@@ -111,7 +111,7 @@ if(DEFINED PYTHON_PROJECT_NAME)
 
 
     if(DEFINED SKBUILD)
-    install(TARGETS ${NB_MODULE_PATH}
+    install(TARGETS ${PYTHON_BIND_MODULES}
             CONFIGURATIONS Release
             LIBRARY DESTINATION
             ${PYTHON_PROJECT_NAME})
@@ -135,8 +135,8 @@ target_include_directories(c${PROJECT_NAME} INTERFACE ${PROJECT_SOURCE_DIR}/incl
 
 
 
- add_executable(example examples/main.cpp)
- target_link_libraries(example PRIVATE c${PROJECT_NAME})
+add_executable(example examples/main.cpp)
+target_link_libraries(example PRIVATE c${PROJECT_NAME})
 
 install(TARGETS c${PROJECT_NAME}
     LIBRARY DESTINATION lib
