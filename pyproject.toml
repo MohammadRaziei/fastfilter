@@ -6,7 +6,7 @@ build-backend = "scikit_build_core.build"
 
 [project]
 name = "fastfilter"
-version = "0.0.2"
+version = "0.0.3"
 description = "High-Performance Non-Linear Filters and Window Functions Library in C++ with Python Bindings"
 readme = "README.md"
 authors = [
