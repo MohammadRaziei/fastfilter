@@ -28,7 +28,13 @@ jobs:
 #        run: sudo apt install -y build-essential cmake # libgtest-dev libgmock-dev
 
       - name: Configure the project
-        uses: threeal/cmake-action@v1.3.0
+        uses: threeal/cmake-action@v2.0.0
+        with:
+          options: |
+            BUILD_PYTHON=ON
+
+      - name: Install python test dependencies
+        run: pip install numpy scipy
 
 #      - name: Configure the project
 #        run: cmake . -Bbuild
@@ -41,4 +47,4 @@ jobs:
 
       - uses: actions/upload-artifact@v3
         with:
-          path: build/*urlparser*
+          path: build/*fastfilter*
