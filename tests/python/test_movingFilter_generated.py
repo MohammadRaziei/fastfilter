@@ -6,7 +6,7 @@ import pytest
 import scipy
 import scipy.signal
 
-import medianFilter as filt  # Assuming this is the module where your filter function is defined
+import fastfilter as filt  # Assuming this is the module where your filter function is defined
 
 maxHalfWinSize = 10
 minSize = maxHalfWinSize * 2 + 1

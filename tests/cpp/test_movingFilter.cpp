@@ -9,7 +9,7 @@
 
 #include <nlohmann/json.hpp>
 
-#include "medianFilter.h"
+#include "movingFilter.h"
 
 //#include "../../examples/common.h"
 

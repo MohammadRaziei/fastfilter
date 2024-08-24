@@ -17,7 +17,7 @@
 #include <mexAdapter.hpp>
 #include <stdint.h>
 
-#include "medianFilter.h"
+#include "movingFilter.h"
 
 class MexFunction : public matlab::mex::Function {
 private:

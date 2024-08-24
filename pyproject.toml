@@ -5,9 +5,9 @@ build-backend = "scikit_build_core.build"
 
 
 [project]
-name = "medianFilter"
+name = "fastfilter"
 version = "0.0.2"
-description = "A state of the art C++ binding example for C++, Python and Matlab"
+description = "High-Performance Non-Linear Filters and Window Functions Library in C++ with Python Bindings"
 readme = "README.md"
 authors = [
   { name = "Mohammad Raziei", email = "mohammadraziei1375@gmail.com" },
@@ -95,11 +95,12 @@ select = [
    "T20",         # flake8-print
    "UP",          # pyupgrade
    "YTT",         # flake8-2020
-   "NPY",         # NumPy specific rules
+#   "NPY",         # NumPy specific rules
    "PD",          # pandas-vet
 ]
 extend-ignore = [
    "PLR",    # Design related pylint codes
+   "RET504", "PTH100",
    "E501",   # Line too long
 ]
 target-version = "py38"

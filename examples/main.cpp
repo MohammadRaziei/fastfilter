@@ -3,10 +3,7 @@
 //
 #include <iostream>
 #include "common.h"
-#include "medianFilter.h"
-
-
-
+#include "movingFilter.h"
 
 ////inline float myrand() { return (float)std::rand() / (RAND_MAX); }
 //inline float myrand() { return float(std::rand() % 20); }

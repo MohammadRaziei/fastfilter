@@ -23,7 +23,7 @@ if __name__ == "__main__":
     relative_sources = make_relative_paths(base_path, sources)
     includes_str = list_to_str(relative_includes, " -I")
     sources_str = list_to_str(relative_sources)
-    print("mex" + includes_str + sources_str + f" -output {name}")
+    sys.stdout.write("mex" + includes_str + sources_str + f" -output {name}")
 
 
 

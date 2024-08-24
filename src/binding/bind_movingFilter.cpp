@@ -4,7 +4,7 @@
 
 #include <stdint.h>
 #include <string>
-#include "medianFilter.h"
+#include "movingFilter.h"
 
 #define STRINGIFY(x) #x
 #define MACRO_STRINGIFY(x) STRINGIFY(x)
@@ -36,7 +36,7 @@ m.doc() = R"pbdoc(
             kernel: Type of kernel to use for filtering. Can be 'median' or 'average'.
 
         Example usage:
-            >>> import medianFilter as filt
+            >>> import fastfilter as filt
             >>> data = [1, 2, 3, 4, 5]
             >>> filt.movingfilter(data, 1, 'median')
             [1.5, 2.5, 3.5, 4.5]

@@ -68,6 +68,7 @@ if(DEFINED PYTHON_PROJECT_NAME)
     # Import nanobind through CMake's find_package mechanism
     find_package(nanobind CONFIG REQUIRED)
 
+    file(GLOB PYTHON_BIND_SOURCES ${PROJECT_SOURCE_DIR}/src/binding/bind_*.cpp)
     # We are now ready to compile the actual extension module
     nanobind_add_module(
         # Name of the extension
@@ -87,7 +88,7 @@ if(DEFINED PYTHON_PROJECT_NAME)
         NB_STATIC
 
         # Source code goes here
-        ${PROJECT_SOURCE_DIR}/src/binding/bind_medianFilter.cpp
+        ${PYTHON_BIND_SOURCES}
     )
 
     target_sources(_core PRIVATE ${SOURCES})
