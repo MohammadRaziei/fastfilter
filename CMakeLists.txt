@@ -68,42 +68,59 @@ if(DEFINED PYTHON_PROJECT_NAME)
     # Import nanobind through CMake's find_package mechanism
     find_package(nanobind CONFIG REQUIRED)
 
-    file(GLOB PYTHON_BIND_SOURCES ${PROJECT_SOURCE_DIR}/src/binding/bind_*.cpp)
-    # We are now ready to compile the actual extension module
-    nanobind_add_module(
-        # Name of the extension
-        _core
+    file(GLOB PYTHON_BIND_MODULES_PATH ${PROJECT_SOURCE_DIR}/src/binding/bind_*)
+    set(PYTHON_BIND_MODULES "_about")
 
-        # Target the stable ABI for Python 3.12+, which reduces
-        # the number of binary wheels that must be built. This
-        # does nothing on older Python versions
-        STABLE_ABI
+    foreach(NB_MODULE_PATH IN LISTS PYTHON_BIND_MODULES_PATH)
+        get_filename_component(NB_MODULE ${NB_MODULE_PATH} NAME)
+        string(REGEX REPLACE "bind_(.*)" "\\1" NB_MODULE ${NB_MODULE})
+        list(APPEND PYTHON_BIND_MODULES ${NB_MODULE})
+        file(GLOB NB_MODULE_SOURCES ${NB_MODULE_PATH}/*.cpp)
 
-        # Build libnanobind statically and merge it into the
-        # extension (which itself remains a shared library)
-        #
-        # If your project builds multiple extensions, you can
-        # replace this flag by NB_SHARED to conserve space by
-        # reusing a shared libnanobind across libraries
-        NB_STATIC
+        message(STATUS "Found module: ${NB_MODULE}")
 
-        # Source code goes here
-        ${PYTHON_BIND_SOURCES}
-    )
+        # Add more commands here to process each directory as needed
 
-    target_sources(_core PRIVATE ${SOURCES})
-    target_include_directories(_core PRIVATE include src)
-    target_compile_definitions(_core PRIVATE VERSION_INFO=${PROJECT_VERSION})
+        # We are now ready to compile the actual extension module
+        nanobind_add_module(
+            # Name of the extension
+            ${NB_MODULE}
+
+            # Target the stable ABI for Python 3.12+, which reduces
+            # the number of binary wheels that must be built. This
+            # does nothing on older Python versions
+            STABLE_ABI
+
+            # Build libnanobind statically and merge it into the
+            # extension (which itself remains a shared library)
+            #
+            # If your project builds multiple extensions, you can
+            # replace this flag by NB_SHARED to conserve space by
+            # reusing a shared libnanobind across libraries
+            NB_STATIC
+
+            # Source code goes here
+            ${NB_MODULE_SOURCES}
+        )
+
+        target_include_directories(${NB_MODULE} PRIVATE include src)
+    endforeach()
+
+    nanobind_add_module(_about STABLE_ABI NB_STATIC ${PROJECT_SOURCE_DIR}/src/binding/about.cpp)
+    target_compile_definitions(_about PRIVATE VERSION_INFO=${PROJECT_VERSION})
 
 
     if(DEFINED SKBUILD)
-    install(TARGETS _core
+    install(TARGETS ${NB_MODULE_PATH}
             CONFIGURATIONS Release
             LIBRARY DESTINATION
             ${PYTHON_PROJECT_NAME})
     else()
     file(COPY ${PROJECT_SOURCE_DIR}/src/${PROJECT_NAME} DESTINATION ${PYTHON_PROJECT_NAME})
-    set_target_properties(_core PROPERTIES LIBRARY_OUTPUT_DIRECTORY ${PYTHON_PROJECT_NAME}/${PROJECT_NAME})
+
+    foreach(_core IN LISTS PYTHON_BIND_MODULES)
+        set_target_properties(${_core} PROPERTIES LIBRARY_OUTPUT_DIRECTORY ${PYTHON_PROJECT_NAME}/${PROJECT_NAME})
+    endforeach()
     endif()
 endif()
 

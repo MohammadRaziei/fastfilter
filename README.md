@@ -1,6 +1,6 @@
 <p align="center">
   <a href="https://github.com/mohammadraziei/MedianFilterCpp">
-    <img src="https://github.com/MohammadRaziei/MedianFilterCpp/blob/master/docs/images/logo/logo-color.svg" alt="Logo">
+    <img src="https://github.com/MohammadRaziei/MedianFilterCpp/raw/master/docs/images/logo/logo-color.svg" alt="Logo">
   </a>
   <h3 align="center">
     High-Performance Non-Linear Filters and Window Functions Library in C++ with Python Bindings

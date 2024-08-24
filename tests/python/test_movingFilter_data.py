@@ -8,7 +8,7 @@ import numpy as np
 import pytest
 import scipy
 
-import fastfilter as filt  # Assuming this is the module where your filter function is defined
+import fastfilter.filter as filt  # Assuming this is the module where your filter function is defined
 
 # The path to the current working directory
 CURRENT_WORK_DIR = Path(__file__).parent

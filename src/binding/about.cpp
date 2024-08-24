@@ -1,25 +1,13 @@
 #include <nanobind/nanobind.h>
-#include <nanobind/stl/vector.h>
-#include <nanobind/stl/string.h>
 
-#include <stdint.h>
-#include <string>
-#include "movingFilter.h"
 
 #define STRINGIFY(x) #x
 #define MACRO_STRINGIFY(x) STRINGIFY(x)
 
 namespace nb = nanobind;
-using namespace nb::literals;
 
-template <typename T>
-inline std::vector<T> movingFilterBind(std::vector<T>& arr, const uint32_t halfWindowSize, const std::string& kernel){
-    filt::movingFilter(arr, arr, halfWindowSize, filt::kernels<T>[kernel]);
-    return arr;
-}
-
-NB_MODULE(_core, m) {
-m.doc() = R"pbdoc(
+NB_MODULE(_about, m) {
+    m.doc() = R"pbdoc(
         Moving Filter Module
 
         This module provides functionality for applying a moving filter
@@ -45,11 +33,10 @@ m.doc() = R"pbdoc(
 
     )pbdoc";
 
-m.def("movingfilter", &movingFilterBind<double>, nb::arg("arr"), nb::arg("halfWindowSize"), nb::arg("kernel")="median");
 
 #ifdef VERSION_INFO
-m.attr("__version__") = MACRO_STRINGIFY(VERSION_INFO);
+    m.attr("__version__") = MACRO_STRINGIFY(VERSION_INFO);
 #else
-m.attr("__version__") = "dev";
+    m.attr("__version__") = "dev";
 #endif
 }
