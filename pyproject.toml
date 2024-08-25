@@ -6,8 +6,8 @@ build-backend = "scikit_build_core.build"
 
 [project]
 name = "fastfilter"
-version = "0.0.3"
-description = "High-Performance Non-Linear Filters and Window Functions Library in C++ with Python Bindings"
+version = "0.0.4"
+description = "High-Performance Linear/Non-Linear Filters and Window Functions Library in C++ with Python Bindings"
 readme = "README.md"
 authors = [
   { name = "Mohammad Raziei", email = "mohammadraziei1375@gmail.com" },
@@ -37,9 +37,9 @@ test = [
 
 
 [project.urls]
-"Homepage" = "https://github.com/mohammadraziei/medianFilterCpp"
-"Bug Tracker" = "https://github.com/mohammadraziei/medianFilterCpp/issues"
-"Document" = "https://mohammadraziei.github.io/medianFilterCpp/latest"
+"Homepage" = "https://github.com/mohammadraziei/fastfilter"
+"Bug Tracker" = "https://github.com/mohammadraziei/fastfilter/issues"
+"Document" = "https://mohammadraziei.github.io/fastfilter/latest"
 
 
 [tool.cibuildwheel]
