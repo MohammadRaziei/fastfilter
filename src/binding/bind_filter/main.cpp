@@ -15,7 +15,7 @@ inline std::vector<T> movingFilterBind(std::vector<T>& arr, const uint32_t halfW
     return arr;
 }
 
-NB_MODULE(filter, m) {
+NB_MODULE(NB_MODULE_NAME, m) {
 m.doc() = R"pbdoc(
         Moving Filter Module
 

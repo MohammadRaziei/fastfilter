@@ -70,6 +70,10 @@ if(DEFINED PYTHON_PROJECT_NAME)
 
     file(GLOB PYTHON_BIND_MODULES_PATH ${PROJECT_SOURCE_DIR}/src/binding/bind_*)
     set(PYTHON_BIND_MODULES "_about")
+    nanobind_add_module(_about STABLE_ABI NB_STATIC ${PROJECT_SOURCE_DIR}/src/binding/about.cpp)
+    target_compile_definitions(_about PRIVATE VERSION_INFO=${PROJECT_VERSION})
+
+
 
     foreach(NB_MODULE_PATH IN LISTS PYTHON_BIND_MODULES_PATH)
         get_filename_component(NB_MODULE ${NB_MODULE_PATH} NAME)
@@ -104,11 +108,8 @@ if(DEFINED PYTHON_PROJECT_NAME)
         )
 
         target_include_directories(${NB_MODULE} PRIVATE include src)
+        target_compile_definitions(${NB_MODULE}  PRIVATE NB_MODULE_NAME=${NB_MODULE})
     endforeach()
-
-    nanobind_add_module(_about STABLE_ABI NB_STATIC ${PROJECT_SOURCE_DIR}/src/binding/about.cpp)
-    target_compile_definitions(_about PRIVATE VERSION_INFO=${PROJECT_VERSION})
-
 
     if(DEFINED SKBUILD)
     install(TARGETS ${PYTHON_BIND_MODULES}
