@@ -9,7 +9,7 @@ import scipy.signal
 import fastfilter.filter as filt  # Assuming this is the module where your filter function is defined
 
 maxHalfWinSize = 10
-minSize = 10
+minSize = maxHalfWinSize * 2 + 1
 maxSize = 200
 minElement = -100
 maxElement = 100
