@@ -6,7 +6,7 @@
 
 namespace nb = nanobind;
 
-NB_MODULE(_about, m) {
+NB_MODULE(NB_MODULE_NAME, m) {
     m.doc() = R"pbdoc(
         Moving Filter Module
 

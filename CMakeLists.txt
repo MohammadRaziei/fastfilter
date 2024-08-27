@@ -68,13 +68,15 @@ if(DEFINED PYTHON_PROJECT_NAME)
     # Import nanobind through CMake's find_package mechanism
     find_package(nanobind CONFIG REQUIRED)
 
+
+    set(NB_MODULE _about)
+    nanobind_add_module(${NB_MODULE} STABLE_ABI NB_STATIC ${PROJECT_SOURCE_DIR}/src/binding/about.cpp)
+    target_compile_definitions(${NB_MODULE} PRIVATE
+            VERSION_INFO=${PROJECT_VERSION}
+            NB_MODULE_NAME=${NB_MODULE})
+
     file(GLOB PYTHON_BIND_MODULES_PATH ${PROJECT_SOURCE_DIR}/src/binding/bind_*)
-    set(PYTHON_BIND_MODULES "_about")
-    nanobind_add_module(_about STABLE_ABI NB_STATIC ${PROJECT_SOURCE_DIR}/src/binding/about.cpp)
-    target_compile_definitions(_about PRIVATE VERSION_INFO=${PROJECT_VERSION})
-
-
-
+    set(PYTHON_BIND_MODULES "${NB_MODULE}")
     foreach(NB_MODULE_PATH IN LISTS PYTHON_BIND_MODULES_PATH)
         get_filename_component(NB_MODULE ${NB_MODULE_PATH} NAME)
         string(REGEX REPLACE "bind_(.*)" "\\1" NB_MODULE ${NB_MODULE})
