@@ -4,6 +4,8 @@
 #include <iostream>
 #include "common.h"
 #include "movingFilter.h"
+#include "movingFilter/movingAverage.hpp"
+#include "movingFilter/rankFilter.hpp"
 
 ////inline float myrand() { return (float)std::rand() / (RAND_MAX); }
 //inline float myrand() { return float(std::rand() % 20); }
@@ -25,11 +27,51 @@ int main() {
     std::vector<float> filtData(data.size());
     const uint32_t halfWindowSize = 2;
     tic;
-    filt::movingFilter(filtData, data, halfWindowSize, filt::kernel::median);
+    filt::movingFilter(filtData, data, halfWindowSize, filt::kernel::average);
     toc;
 
     show(filtData);
+
+    tic;
+    filt::MovingAverage<float> movingAverage(halfWindowSize);
+//    mf.setDynamicPadding();
+    movingAverage(filtData, data);
+    toc;
+    show(data);
+    show(filtData);
+
+
+    tic;//    mf.setDynamicPadding();
+    filt::movingFilter(filtData, data, halfWindowSize, filt::kernel::median);
+    toc;
+    show(data);
+    show(filtData);
+
+    tic;
+    filt::MedianFilter<float> medianFilter(halfWindowSize);
+    //    mf.setDynamicPadding();
+    medianFilter(filtData, data);
+    toc;
+    show(data);
+    show(filtData);
+
+
+
+    tic;//    mf.setDynamicPadding();
+    filt::movingFilter(filtData, data, halfWindowSize, filt::kernel::maximum);
+    toc;
+    show(data);
+    show(filtData);
+
+    tic;
+    filt::MaximumFilter<float> maxFilter(halfWindowSize);
+    //    mf.setDynamicPadding();
+    maxFilter(filtData, data);
+    toc;
+    show(data);
+    show(filtData);
+
+
     printf("\ngood bye :)\n");
     return 0;
-
 }

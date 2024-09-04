@@ -177,45 +177,12 @@ namespace filt {
             const size_t vecSize,
             const uint32_t halfWindow,
             kernel::KernelType<T> filtKernel){
-//            const ParallelMethod &method = ParallelMethod::NONE)
         const uint32_t windowSize = 2 * halfWindow + 1;
         filtKernel(output, input, (uint32_t) vecSize,
                    halfWindow, true);
-}
-//            case ParallelMethod::CPU: {
-                // const uint32_t lenFrames =
-                // (uint32_t)ceilf((T)vecSize / NUM_THREADS);
-                // Concurrency::parallel_for(
-                //     (uint32_t)0, (uint32_t)vecSize, lenFrames, [&](const
-                //     uint32_t& i) {
-                //       if (i + lenFrames <= vecSize)
-                //         filtKernel(output.data() + i, inp.data() + i, lenFrames,
-                //                    halfWindow);
-                //       else
-                //         filtKernel(output.data() + i, inp.data() + i,
-                //                    (uint32_t)vecSize - i, halfWindow);
-                //     });
+    }
 
-//                const uint32_t lenFrames =
-//                        (uint32_t) ceilf((T) vecSize / (float) NUM_THREADS);
-//
-//#pragma omp parallel for
-//                for (uint32_t i = 0; i < vecSize; i += lenFrames) {
-//                    uint32_t end = i + lenFrames;
-//                    if (end > vecSize)
-//                        end = vecSize;
-//
-//                    filtKernel(output + i, inp.data() + i, end - i,
-//                               halfWindow);
-//                }
-//                break;
-//            }
-//            case ParallelMethod::GPU: {
-//                break;
-//            }
-//        }
-//        output.resize(vecSize);
-//    }
+
 
     template<typename T>
     void movingFilter(
