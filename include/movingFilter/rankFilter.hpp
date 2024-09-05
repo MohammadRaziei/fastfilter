@@ -5,12 +5,12 @@
 
 namespace filt {
 template <typename T>  // Template class for moving average filter
-class RankFilter : public MovingFilter<T> {
+class RankFilterGeneral : public MovingFilter<T> {
    public:
     using ArrayReducerFunc = T(*)(const T[], const uint32_t);
     static void sortedInOut(T sortedData[], const uint32_t len, const T &outValue, const T &inValue);
    public:
-    RankFilter(uint32_t windowSize, ArrayReducerFunc reducerFunc, T* paddingValuePtr = nullptr) :
+    RankFilterGeneral(uint32_t windowSize, ArrayReducerFunc reducerFunc, const T* paddingValuePtr = nullptr) :
           MovingFilter<T>(windowSize, windowSize + 1),
               reducerFunc(reducerFunc) {
         if(paddingValuePtr) this->padBuffer(*paddingValuePtr);
@@ -33,7 +33,7 @@ class RankFilter : public MovingFilter<T> {
 
 
 template<typename T>
-inline void filt::RankFilter<T>::sortedInOut(T sortedData[],
+inline void filt::RankFilterGeneral<T>::sortedInOut(T sortedData[],
                                        const uint32_t len,
                                        const T &outValue,
                                        const T &inValue) {
@@ -63,11 +63,10 @@ inline void filt::RankFilter<T>::sortedInOut(T sortedData[],
 
 namespace filt {
 template <typename T>  // Template class for moving average filter
-class MedianFilter : public RankFilter<T> {
+class MedianFilter : public RankFilterGeneral<T> {
    public:
     MedianFilter(uint32_t windowSize) :
-      RankFilter<T>(windowSize, &median) {
-        this->padBuffer(static_cast<T>(0));
+          RankFilterGeneral<T>(windowSize, &median, &paddingValue) {
     }
     static T median(const T arr[], const uint32_t size) {
         const uint32_t size2 = size >> 1;
@@ -76,33 +75,42 @@ class MedianFilter : public RankFilter<T> {
         else
             return arr[size2];
     }
+    static constexpr T paddingValue = static_cast<T>(0);
 };
 
 template <typename T>  // Template class for moving average filter
-class MaximumFilter : public RankFilter<T> {
+class MaximumFilter : public RankFilterGeneral<T> {
    public:
     MaximumFilter(uint32_t windowSize) :
-          RankFilter<T>(windowSize, &maximum) {
-        this->padBuffer(std::numeric_limits<T>::lowest());
+          RankFilterGeneral<T>(windowSize, &maximum, &paddingValue) {
     }
     static T maximum(const T arr[], const uint32_t size) {
         return arr[size - 1];
     }
+    static constexpr T paddingValue = std::numeric_limits<T>::lowest();
 };
 
 template <typename T>  // Template class for moving average filter
-class MinimumFilter : public RankFilter<T> {
+class MinimumFilter : public RankFilterGeneral<T> {
    public:
     MinimumFilter(uint32_t windowSize) :
-          RankFilter<T>(windowSize, &minimum) {
-        this->padBuffer(std::numeric_limits<T>::max());
+          RankFilterGeneral<T>(windowSize, &minimum, &paddingValue) {
     }
     static T minimum(const T arr[], const uint32_t size) {
         return arr[0];
     }
+    static constexpr T paddingValue = std::numeric_limits<T>::max();
+};
+
+template <typename T>  // Template class for moving average filter
+class RankFilter : public RankFilterGeneral<T> {
+   public:
+    RankFilter(uint32_t windowSize, int32_t rank) :
+          RankFilter<T>(windowSize, [rank](const T arr[], const uint32_t size) {return arr[rank % size];}) {
+    }
 };
 }
-
+// https://docs.scipy.org/doc/scipy/reference/generated/scipy.ndimage.rank_filter.html
 
 
 
