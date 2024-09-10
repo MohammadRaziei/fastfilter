@@ -107,45 +107,78 @@ namespace filt {
         uint32_t counter = 0;
     };
 
+    enum class PaddingMode {
+        None, // 0
+        Constant, // 1
+        Nearest, // 2
+    };
 
     template<typename T>
     class MovingFilter{
        public:
         MovingFilter() = default;
-        MovingFilter(const uint32_t halfWindow, const uint32_t auxWindowSize = 1) :
-              windowSize(2 * halfWindow + 1) {
-            buffer.resize(windowSize);
-            auxWindow.resize(auxWindowSize);
+        MovingFilter(const uint32_t windowSize, const uint32_t auxWindowSize = 1,
+                     enum PaddingMode mode = PaddingMode::Nearest,
+                     const T& cval = static_cast<T>(0)) :
+              windowSize(windowSize) {
+            this->buffer.resize(windowSize);
+            this->auxWindow.resize(auxWindowSize);
+            setPaddingMode(mode, cval);
         };
 
         void padBuffer(const T paddingValue) {
-            buffer.fill(paddingValue);
-            std::fill(auxWindow.begin(), auxWindow.end(), paddingValue);
-            fillbuffer = true;
+            this->cval = paddingValue;
+            this->buffer.fill(paddingValue);
+            std::fill(this->auxWindow.begin(), this->auxWindow.end(), paddingValue);
+            this->fillbuffer = true;
         }
 
-        void setDynamicPadding() {
+        void setPaddingMode(PaddingMode mode, const T& cval = static_cast<T>(0)) {
             this->fillbuffer = false;
+            this->mode = mode;
+            if (mode == PaddingMode::Constant) {
+                padBuffer(cval);
+            }
         }
 
         void operator()(T output[], const T input[], const uint32_t size) {
-                for (uint32_t i = 0; i < size; ++i) {
-                    operator()(output[i], input[i]);
+            if (size == 0)
+                return;
+            if (!fillbuffer && (mode == PaddingMode::Nearest)) {
+                padBuffer(input[0]);
+            }
+            for (uint32_t i = 0; i < size; ++i) {
+                process_one(output[i], input[i]);
             }
         }
+
         void operator()(std::vector<T>& output, const std::vector<T>& input) {
             output.resize(input.size());
             operator()(output.data(), input.data(), input.size());
         }
         void operator()(T& output, const T input) {
-            if (!fillbuffer) {
+            if (!fillbuffer & (mode == PaddingMode::Nearest)) {
                 buffer.fill(input);
                 std::fill(auxWindow.begin(), auxWindow.end(), input);
                 fillbuffer = true;
             }
-            changeAuxiliaryWindow(input, buffer.pop(input));
-            output = calculateOutputFromWindow();
+            process_one(output, input);
         }
+
+
+        std::vector<T> operator()(const std::vector<T>& input) {
+            std::vector<T> output;
+            output.resize(input.size());
+            operator()(output.data(), input.data(), input.size());
+            return output;
+        }
+
+        T operator()(const T input) {
+            T output;
+            operator()(output, input);
+            return output;
+        }
+
 
         virtual void changeAuxiliaryWindow(const T& inp, const T& out){
             auxWindow[0] = inp;
@@ -154,13 +187,21 @@ namespace filt {
         virtual T calculateOutputFromWindow(){
             return auxWindow[0];
         }
+       private:
+        void process_one(T& output, const T& input) {
+            changeAuxiliaryWindow(input, buffer.top());
+            buffer.push(input);
+            output = calculateOutputFromWindow();
+        }
+
        protected:
         InputBuffer<T> buffer;
         std::vector<T> auxWindow;
         const uint32_t windowSize = 1;
+        PaddingMode mode;
+        T cval = 0;
        private:
         bool fillbuffer = false;
-//        bool dynamic_padding = false;
     };
 
 }  // namespace filt

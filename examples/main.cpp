@@ -6,6 +6,9 @@
 #include "movingFilter.h"
 #include "movingFilter/movingAverage.hpp"
 #include "movingFilter/rankFilter.hpp"
+#include "movingFilter/medianFilter.hpp"
+#include "movingFilter/maximumFilter.hpp"
+#include "movingFilter/minimumFilter.hpp"
 
 ////inline float myrand() { return (float)std::rand() / (RAND_MAX); }
 //inline float myrand() { return float(std::rand() % 20); }
@@ -23,55 +26,93 @@ int main() {
                               3, 0, -4, -2, -10, -11, -9, -10, -15, -11, -15, -12, -19, -19, -9, -15, -9, -11, -9, -6,
                               2, 101, 7, 7};
 
-    show(data);
     std::vector<float> filtData(data.size());
     const uint32_t halfWindowSize = 2;
+    const uint32_t windowSize = halfWindowSize * 2 + 1;
+
+    printf("============================\n");
+    show(data);
+
+    printf(">> classic moving average\n");
     tic;
     filt::movingFilter(filtData, data, halfWindowSize, filt::kernel::average);
     toc;
-
     show(filtData);
 
+    printf(">> modern moving average\n");
     tic;
-    filt::MovingAverage<float> movingAverage(halfWindowSize);
-//    mf.setDynamicPadding();
+    filt::MovingAverage<float> movingAverage(windowSize);
     movingAverage(filtData, data);
     toc;
-    show(data);
     show(filtData);
 
+    printf("============================\n");
+    show(data);
 
+    printf(">> classic moving median\n");
     tic;//    mf.setDynamicPadding();
     filt::movingFilter(filtData, data, halfWindowSize, filt::kernel::median);
     toc;
-    show(data);
     show(filtData);
 
+    printf(">> modern moving median\n");
     tic;
-    filt::MedianFilter<float> medianFilter(halfWindowSize);
+    filt::MedianFilter<float> medianFilter(windowSize);
     //    mf.setDynamicPadding();
     medianFilter(filtData, data);
     toc;
-    show(data);
     show(filtData);
 
+        printf("============================\n");
+        show(data);
+
+        printf(">> classic moving max\n");
+        tic;//    mf.setDynamicPadding();
+        filt::movingFilter(filtData, data, halfWindowSize, filt::kernel::maximum);
+        toc;
+        show(filtData);
+
+        printf(">> modern moving maximum\n");
+        tic;
+        filt::MaximumFilter<float> maxFilter(windowSize);
+        maxFilter(filtData, data);
+        toc;
+        show(filtData);
 
 
-    tic;//    mf.setDynamicPadding();
-    filt::movingFilter(filtData, data, halfWindowSize, filt::kernel::maximum);
-    toc;
-    show(data);
-    show(filtData);
-
-    tic;
-    filt::MaximumFilter<float> maxFilter(halfWindowSize);
-    //    mf.setDynamicPadding();
-    maxFilter(filtData, data);
-    toc;
-    show(data);
-    show(filtData);
+        printf(">> modern rankfilter: -1\n");
+        tic;
+        filt::RankFilter<float> rankFilterMax(windowSize, -1);
+        rankFilterMax(filtData, data);
+        toc;
+        show(filtData);
 
 
-    printf("\ngood bye :)\n");
+        printf("============================\n");
+        show(data);
+
+        printf(">> classic moving max\n");
+        tic;//    mf.setDynamicPadding();
+        filt::movingFilter(filtData, data, halfWindowSize, filt::kernel::maximum);
+        toc;
+        show(filtData);
+
+        printf(">> modern moving minimum\n");
+        tic;
+        filt::MinimumFilter<float> minFilter(windowSize);
+        minFilter(filtData, data);
+        toc;
+        show(filtData);
+
+
+        printf(">> modern rankfilter: 0\n");
+        tic;
+        filt::RankFilter<float> rankFilterMin(windowSize, 0);
+        rankFilterMin(filtData, data);
+        toc;
+        show(filtData);
+
+
+        printf("\ngood bye :)\n");
     return 0;
 }
