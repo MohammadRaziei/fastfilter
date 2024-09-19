@@ -9,6 +9,8 @@
 #include "movingFilter/medianFilter.hpp"
 #include "movingFilter/maximumFilter.hpp"
 #include "movingFilter/minimumFilter.hpp"
+#include "ndarray/array.h"
+#include "ndarray/matrix.h"
 
 ////inline float myrand() { return (float)std::rand() / (RAND_MAX); }
 //inline float myrand() { return float(std::rand() % 20); }
@@ -113,6 +115,13 @@ int main() {
         show(filtData);
 
 
+        printf("============================\n");
+
+        Array<int> arr(20, 5);
+        show(arr);
+
+        Matrix<int> mat(20, 20, 2);
+        show(mat);
         printf("\ngood bye :)\n");
     return 0;
 }
