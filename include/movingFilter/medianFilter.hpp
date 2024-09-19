@@ -8,6 +8,7 @@
 #include <limits>
 
 #include "movingFilter/rankFilter.hpp"
+#include "ndarray/matrix.h"
 
 
 namespace filt {
@@ -37,16 +38,14 @@ class RadixMedianFilter : public  MovingFilter<T> {
                  const T& cval = 0) :
           MovingFilter<T>(windowSize, 0, mode, cval) {
     }
-    static T median(const T arr[], const uint32_t size) {
-        const uint32_t size2 = size >> 1;
-        if(size % 2 == 0)
-            return (arr[size2 - 1] + arr[size2]) / 2;
-        else
-            return arr[size2];
+    static T median(const T arr[], uint32_t numMaxBits, const uint32_t size) {
+    }
+    virtual void fillBuffer(const T& value) override{
+        MovingFilter<T>::fillBuffer(value);
     }
 
    protected:
-
+        Matrix<T> alpha;
 };
 
 
