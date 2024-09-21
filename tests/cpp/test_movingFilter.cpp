@@ -10,6 +10,7 @@
 #include <nlohmann/json.hpp>
 
 #include "movingFilter.h"
+#include "movingFilter/medianFilter.hpp"
 
 //#include "../../examples/common.h"
 
@@ -99,4 +100,17 @@ TEST_P(MovfiltTest, MovfiltFunctionInplace) {
     std::vector<float> output = tc.input;
     filt::movingFilter(output, output, tc.windowSize / 2, filt::kernels<float>[tc.kernel]);
     ASSERT_EQ(output, tc.output);
+}
+
+TEST_P(MovfiltTest, MovfiltFunctionModern) {
+	auto& tc = GetParam(); 
+	std::vector<float> output(tc.output.size()); 
+	if (tc.kernel == "median") {
+		filt::MedianFilter<float> medianFilter(tc.windowSize); 
+		medianFilter(output, tc.input);
+		ASSERT_EQ(output, tc.output);
+	}
+	else {
+		ASSERT_EQ(1, 2);
+	}
 }

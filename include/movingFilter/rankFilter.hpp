@@ -15,7 +15,7 @@ class RankFilterGeneral : public MovingFilter<T> {
     RankFilterGeneral(const uint32_t windowSize, ArrayReducerFunc reducerFunc,
                       enum PaddingMode mode = PaddingMode::Constant,
                       const T& cval = 0) :
-          MovingFilter<T>(windowSize, windowSize + 1),
+          MovingFilter<T>(windowSize, windowSize + 1, mode),
           reducerFunc(reducerFunc) {
     }
 

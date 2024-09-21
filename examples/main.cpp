@@ -15,6 +15,28 @@
 ////inline float myrand() { return (float)std::rand() / (RAND_MAX); }
 //inline float myrand() { return float(std::rand() % 20); }
 
+void calc_mse(std::vector<float> arr1, std::vector<float> arr2, int arr_size) {
+	int mismatched = 0; 	
+	float result = 0.0;
+	std::vector<int> mismatched_indices; 
+
+
+	for (uint32_t i = 0; i < arr_size; ++i) {
+		result += (arr1[i] - arr2[i]);
+		if (arr1[i] != arr2[i]) {
+			mismatched ++;
+			mismatched_indices.push_back(i);
+		}
+	}
+	std::cout << "MSE: " << result << std::endl; 
+	std::cout << "mismatched: " << mismatched << "/" << arr_size << std::endl; 
+	for (const auto &item : mismatched_indices) {
+		std::cout << item << " "; 
+	}
+	std::cout << std::endl; 
+}
+
+
 int main() {
 
     std::vector<float> data  {7, 5, 13, 114, 16, 17, 18, 23, 21, 22, 26, 25, 21, 25, 21, 26, 25, 20, 22, 12, 15, 8, 9,
@@ -29,7 +51,8 @@ int main() {
                               2, 101, 7, 7};
 
     std::vector<float> filtData(data.size());
-    const uint32_t halfWindowSize = 2;
+	std::vector<float> filtData2(data.size());
+	const uint32_t halfWindowSize = 2;
     const uint32_t windowSize = halfWindowSize * 2 + 1;
 
     printf("============================\n");
@@ -44,9 +67,11 @@ int main() {
     printf(">> modern moving average\n");
     tic;
     filt::MovingAverage<float> movingAverage(windowSize);
-    movingAverage(filtData, data);
+    movingAverage(filtData2, data);
     toc;
-    show(filtData);
+    show(filtData2);
+	
+	calc_mse(filtData, filtData2, data.size());
 
     printf("============================\n");
     show(data);
@@ -61,36 +86,42 @@ int main() {
     tic;
     filt::MedianFilter<float> medianFilter(windowSize);
     //    mf.setDynamicPadding();
-    medianFilter(filtData, data);
+    medianFilter(filtData2, data);
     toc;
-    show(filtData);
+    show(filtData2);
 
-        printf("============================\n");
-        show(data);
+	calc_mse(filtData, filtData2, data.size());
+/*
+    printf("============================\n");
+    show(data);
 
-        printf(">> classic moving max\n");
-        tic;//    mf.setDynamicPadding();
-        filt::movingFilter(filtData, data, halfWindowSize, filt::kernel::maximum);
-        toc;
-        show(filtData);
+    printf(">> classic moving max\n");
+	tic;//    mf.setDynamicPadding();
+	filt::movingFilter(filtData, data, halfWindowSize, filt::kernel::maximum);
+	toc;
+	show(filtData);
 
-        printf(">> modern moving maximum\n");
-        tic;
-        filt::MaximumFilter<float> maxFilter(windowSize);
-        maxFilter(filtData, data);
-        toc;
-        show(filtData);
+	printf(">> modern moving maximum\n");
+	tic;
+	filt::MaximumFilter<float> maxFilter(windowSize);
+	maxFilter(filtData2, data);
+	toc;
+	show(filtData2);
 
-
-        printf(">> modern rankfilter: -1\n");
-        tic;
-        filt::RankFilter<float> rankFilterMax(windowSize, -1);
-        rankFilterMax(filtData, data);
-        toc;
-        show(filtData);
+	calc_mse(filtData, filtData2, data.size());
 
 
-        printf("============================\n");
+	printf(">> modern rankfilter: -1\n");
+	tic;
+	filt::RankFilter<float> rankFilterMax(windowSize, -1);
+	rankFilterMax(filtData2, data);
+	toc;
+	show(filtData2);
+
+	calc_mse(filtData, filtData2, data.size());
+
+
+    printf("============================\n");
         show(data);
 
         printf(">> classic moving max\n");
@@ -123,5 +154,6 @@ int main() {
         Matrix<int> mat(20, 20, 2);
         show(mat);
         printf("\ngood bye :)\n");
+		*/
     return 0;
 }

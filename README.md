@@ -21,6 +21,18 @@
 [![issues - MedianFilterCpp](https://img.shields.io/github/issues/mohammadraziei/MedianFilterCpp)](https://github.com/mohammadraziei/MedianFilterCpp/issues)
 
 
+
+## How to use the project?
+
+```bash
+cmake -B build 
+cmake --build build 
+ctest --test-dir build 
+```
+
+
+
+
 ## About The Project
 
 **fastfilter** is a powerful library written in C++ with Python bindings. It provides you with the capability to use commonly used window functions and non-linear filters that are utilized in digital signal processing. You can use it in both Python and C++.
@@ -273,17 +285,4 @@ int main(int argc, char** argv) {
 ```
 
 These examples demonstrate how to use various window functions provided by the library. The first example shows basic window functions, while the second example includes window functions that require additional parameters.
-
-
-<!--
-# CMAKE MATLAB PYTHON CPP EXAMPLE
-
-
-
-```bash
-cmake -B build 
-cmake --build build 
-ctest --test-dir build 
-```
--->
 
