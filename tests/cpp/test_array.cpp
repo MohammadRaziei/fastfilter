@@ -87,6 +87,8 @@ TEST(ArrayTest, ConstructionFromRawPointer) {
     EXPECT_EQ(arr.size(), 5u);
     for (int i = 0; i < arr.size(); ++i) {
         EXPECT_EQ(arr[i], data[i]);
+        data[i] *= 10;
+        EXPECT_EQ(arr[i], data[i]);
     }
 
     // Check that the array does not own the data initially
@@ -96,11 +98,12 @@ TEST(ArrayTest, ConstructionFromRawPointer) {
 TEST(ArrayTest, CopyToOwnershipMode) {
     int data[] = {1, 2, 3, 4, 5};
     Array<int> arr(data,5);
+    EXPECT_FALSE(arr.ownsData());
 
     // Copy the array to take ownership of the data
-    Array<int> ownedArr = arr.copy();
+    Array ownedArr = arr.copy();
 
-    EXPECT_EQ(ownedArr.size(), 5u);
+    EXPECT_EQ(ownedArr.size(), arr.size());
     for (int i = 0; i < ownedArr.size(); ++i) {
         EXPECT_EQ(ownedArr[i], data[i]);
     }
@@ -111,14 +114,19 @@ TEST(ArrayTest, CopyToOwnershipMode) {
 
 TEST(ArrayTest, CopyDoesNotAffectOriginalData) {
     int data[] = {1, 2, 3, 4, 5};
-    Array<int> arr(data, data + 5);
+    Array<int> arr(data, 5);
+    EXPECT_FALSE(arr.ownsData());
 
     // Copy the array to take ownership of the data
-    Array<int> ownedArr = arr.copy();
+    Array ownedArr = arr.copy();
+    EXPECT_TRUE(ownedArr.ownsData());
 
     // Modify the original data
     for (int i = 0; i < 5; ++i) {
+        EXPECT_EQ(arr[i], ownedArr[i]);
         data[i] = 0;
+        EXPECT_EQ(arr[i], 0);
+        EXPECT_NE(ownedArr[i], 0);
     }
 
     // Ensure the copied array data remains unchanged
