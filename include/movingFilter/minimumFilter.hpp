@@ -15,7 +15,7 @@ template <typename T>  // Template class for moving average filter
 class MinimumFilter : public RankFilterGeneral<T> {
    public:
     MinimumFilter(uint32_t windowSize,
-          enum PaddingMode mode = PaddingMode::Constant,
+          enum PaddingMode mode = PaddingMode::Nearest,
           const T& cval = std::numeric_limits<T>::max()
           ) : RankFilterGeneral<T>(windowSize, &minimum, mode, cval) {
     }

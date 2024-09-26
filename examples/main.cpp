@@ -91,7 +91,7 @@ int main() {
     show(filtData2);
 
 	calc_mse(filtData, filtData2, data.size());
-/*
+
     printf("============================\n");
     show(data);
 
@@ -124,26 +124,30 @@ int main() {
     printf("============================\n");
         show(data);
 
-        printf(">> classic moving max\n");
+        printf(">> classic moving min\n");
         tic;//    mf.setDynamicPadding();
-        filt::movingFilter(filtData, data, halfWindowSize, filt::kernel::maximum);
+        filt::movingFilter(filtData, data, halfWindowSize, filt::kernel::minimum);
         toc;
         show(filtData);
 
         printf(">> modern moving minimum\n");
         tic;
         filt::MinimumFilter<float> minFilter(windowSize);
-        minFilter(filtData, data);
+        minFilter(filtData2, data);
         toc;
-        show(filtData);
+        show(filtData2);
+
+	calc_mse(filtData, filtData2, data.size());
 
 
         printf(">> modern rankfilter: 0\n");
         tic;
         filt::RankFilter<float> rankFilterMin(windowSize, 0);
-        rankFilterMin(filtData, data);
+        rankFilterMin(filtData2, data);
         toc;
-        show(filtData);
+        show(filtData2);
+
+	calc_mse(filtData, filtData2, data.size());
 
 
         printf("============================\n");
@@ -154,6 +158,6 @@ int main() {
         Matrix<int> mat(20, 20, 2);
         show(mat);
         printf("\ngood bye :)\n");
-		*/
+		
     return 0;
 }

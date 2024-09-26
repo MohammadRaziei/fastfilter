@@ -69,7 +69,7 @@ template <typename T>
 class RankFilter : public RankFilterGeneral<T> {
    public:
     RankFilter(uint32_t windowSize, int32_t rank,
-               enum PaddingMode mode = PaddingMode::Constant,
+               enum PaddingMode mode = PaddingMode::Nearest,
                const T& cval = 0) :
           RankFilterGeneral<T>(windowSize,
                                std::bind(&RankFilter<T>::rankReducer, this, std::placeholders::_1, std::placeholders::_2, rank),
@@ -77,7 +77,9 @@ class RankFilter : public RankFilterGeneral<T> {
     }
    private:
     T rankReducer(const T arr[], const uint32_t size, int32_t rank) {
-        return arr[rank % size];
+	return arr[(size + rank) % size];
+//  	return arr[rank % size]; 
+
     }
 };
 }

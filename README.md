@@ -28,6 +28,7 @@
 cmake -B build 
 cmake --build build 
 ctest --test-dir build 
+ctest --test-dir build --extra-verbose
 ```
 
 

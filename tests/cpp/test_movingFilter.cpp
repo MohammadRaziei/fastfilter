@@ -11,6 +11,8 @@
 
 #include "movingFilter.h"
 #include "movingFilter/medianFilter.hpp"
+#include "movingFilter/maximumFilter.hpp"
+#include "movingFilter/movingAverage.hpp"
 
 //#include "../../examples/common.h"
 
@@ -85,7 +87,7 @@ INSTANTIATE_TEST_SUITE_P(
                 (CURRENT_WORK_DIR.parent_path() / "movingfilter-data.json").string())));
 
 
-
+// 3 tests) read from the json file for median, max and avg kernels
 TEST_P(MovfiltTest, MovfiltFunction) {
     auto& tc = GetParam();
     // Assuming medfilt is a function that takes a vector<int> and returns a vector<int>
@@ -94,6 +96,7 @@ TEST_P(MovfiltTest, MovfiltFunction) {
     ASSERT_EQ(output, tc.output);
 }
 
+// 3 tests) read from the json file for median, max and avg kernels in inplace mode
 TEST_P(MovfiltTest, MovfiltFunctionInplace) {
     auto& tc = GetParam();
     // Assuming medfilt is a function that takes a vector<int> and returns a vector<int>
@@ -102,6 +105,7 @@ TEST_P(MovfiltTest, MovfiltFunctionInplace) {
     ASSERT_EQ(output, tc.output);
 }
 
+// 3 tests) read from the json file for median, max and avg kernels for modern mode
 TEST_P(MovfiltTest, MovfiltFunctionModern) {
 	auto& tc = GetParam(); 
 	std::vector<float> output(tc.output.size()); 
@@ -110,7 +114,14 @@ TEST_P(MovfiltTest, MovfiltFunctionModern) {
 		medianFilter(output, tc.input);
 		ASSERT_EQ(output, tc.output);
 	}
-	else {
-		ASSERT_EQ(1, 2);
+	else if (tc.kernel == "maximum") {
+		filt::MaximumFilter<float> maxFilter(tc.windowSize);
+		maxFilter(output, tc.input);
+		ASSERT_EQ(output, tc.output);
+	}
+	else if (tc.kernel == "average") {
+		filt::MovingAverage<float> movingAverage(tc.windowSize);
+		movingAverage(output, tc.input);
+		ASSERT_EQ(output, tc.output);
 	}
 }
