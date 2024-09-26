@@ -11,6 +11,7 @@
 #include <stdint.h>
 #include <vector>
 #include <string>
+#include <algorithm>
 
 template <typename T>
 class Array {
@@ -55,7 +56,7 @@ class Array {
         if (!_data) {
             throw std::runtime_error("Memory allocation failed.");
         }
-        std::transform(other.begin(), other.end(), this->begin());
+        std::copy(other.begin(), other.end(), this->begin());
     }
 
     // Move Constructor
@@ -65,7 +66,8 @@ class Array {
         other._self_ownership = false;
     }
 
-    Array&& copy() const{
+    // TODO: make this rvalue
+    Array copy() const{
         return Array(_data, _data + _size);
     }
     // Move Assignment Operator
@@ -159,6 +161,10 @@ class Array {
 
     void fill(const T& value){
         std::fill(begin(), end(), value);
+    }
+
+    [[nodiscard]] bool ownsData() const {
+        return _self_ownership;
     }
 
     // To String
