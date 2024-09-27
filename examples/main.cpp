@@ -77,31 +77,6 @@ int main() {
 	
 	calc_mse(filtData, filtData2, data.size());
 	
-	
-	static std::random_device rd; 
-	static std::mt19937 gen(rd()); 
-	std::uniform_real_distribution<> dis(1.0, 10.0); 
-	std::cout << "dis(gen): " << int(dis(gen)) << std::endl; 
-	std::cout << "dis(gen): " << dis(gen) << std::endl; 
-	std::cout << "dis(gen): " << dis(gen) << std::endl; 
-	std::cout << "dis(gen): " << dis(gen) << std::endl; 
-	std::cout << "dis(gen): " << dis(gen) << std::endl; 
-	std::cout << "dis(gen): " << dis(gen) << std::endl; 
-
-	std::cout << "rand(): " << rand() << std::endl; 
-	std::cout << "rand(): " << rand() << std::endl; 
-	std::cout << "rand(): " << rand() << std::endl; 
-	std::cout << "rand(): " << rand() << std::endl; 
-	std::cout << "rand(): " << rand() << std::endl; 
-	std::cout << "rand(): " << rand() << std::endl; 
-	std::cout << "rand(): " << rand() << std::endl; 
-	std::cout << "rand(): " << rand() << std::endl; 
-
-
-
-
-
-/*
     printf("============================\n");
     show(data);
 
@@ -180,7 +155,7 @@ int main() {
 
 
         printf("============================\n");
-*/
+
         Array<int> arr(20, 5);
         show(arr);
 
