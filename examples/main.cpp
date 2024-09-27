@@ -141,12 +141,12 @@ int main() {
 	calc_mse(filtData, filtData2, data.size());
 
 
-        printf(">> modern rankfilter: 0\n");
-        tic;
-        filt::RankFilter<float> rankFilterMin(windowSize, 0);
-        rankFilterMin(filtData2, data);
-        toc;
-        show(filtData2);
+    printf(">> modern rankfilter: 0\n");
+    tic;
+    filt::RankFilter<float> rankFilterMin(windowSize, 0);
+    rankFilterMin(filtData2, data);
+    toc;
+    show(filtData2);
 
 	calc_mse(filtData, filtData2, data.size());
 
@@ -165,9 +165,11 @@ int main() {
     show(ndarr(1, 0, 1));
     show(ndarr.size(0));
 
-    auto ndarr2 = NDArray<int>(2,4,3).fill(5);
+    NDArray<int> ndarr2(2,4,3);
+    ndarr2.fill(5);
     show(ndarr2.shape());
     show(ndarr2);
+    show(ndarr2 == ndarr);
 
 
     printf("\ngood bye :)\n");

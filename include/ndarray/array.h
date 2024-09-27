@@ -92,6 +92,21 @@ class Array {
         }
     }
 
+    bool operator==(const Array& other) const noexcept{
+        if (this == &other) {
+            return true;
+        }
+        if (_size != other._size){
+            return false;
+        }
+        for (uint32_t i {0}; i < _size; ++i) {
+            if (_data[i] != other[i]){
+                return false;
+            }
+        }
+        return true;
+    }
+
     // Add element to the end of the array
     void push_back(const T& value) {
         _size++;
@@ -159,9 +174,8 @@ class Array {
         return std::vector<T>(_data, _data + _size);
     }
 
-    Array<T>& fill(const T& value){
+    void fill(const T& value){
         std::fill(begin(), end(), value);
-        return *this;
     }
 
     [[nodiscard]] bool ownsData() const {

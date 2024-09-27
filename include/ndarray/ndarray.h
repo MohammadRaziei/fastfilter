@@ -52,9 +52,16 @@ public:
     }
 
     // Indexing with multiple indices
-    NDArray<T> &fill(const T &value) {
+    void fill(const T &value) {
         Array<T>::fill(value);
-        return *this;
+    }
+
+    bool operator==(const NDArray<T>& other) const noexcept{
+        if (this == &other) return true;
+        if (_dim != other._dim || _shape != other._shape){
+            return false;
+        }
+        return Array<T>::operator==(other);
     }
 
     const uint32_t calculateIndex(const std::vector<uint32_t> &indices) const {
