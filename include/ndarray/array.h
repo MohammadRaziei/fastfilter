@@ -16,9 +16,9 @@
 template <typename T>
 class Array {
    private:
+    bool _self_ownership;
     uint32_t _size;
     T* _data;
-    bool _self_ownership;
 
    public:
     // Constructor
@@ -120,7 +120,7 @@ class Array {
     }
 
     // Size
-    uint32_t size() const {
+    const uint32_t size() const {
         return _size;
     }
 

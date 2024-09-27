@@ -10,6 +10,7 @@
 #include "movingFilter/maximumFilter.hpp"
 #include "movingFilter/minimumFilter.hpp"
 #include "ndarray/array.h"
+#include "ndarray/ndarray.h"
 #include "ndarray/matrix.h"
 
 ////inline float myrand() { return (float)std::rand() / (RAND_MAX); }
@@ -157,7 +158,18 @@ int main() {
 
         Matrix<int> mat(20, 20, 2);
         show(mat);
-        printf("\ngood bye :)\n");
+
+        NDArray<int> ndarr({2,4,3}, 5);
+        show((ndarr[{1, 0, 1}]));
+        show(ndarr[6]);
+        show(ndarr(1, 0, 1));
+        show(ndarr.size(0));
+
+        NDArray<int> ndarr2(2,4,3);
+
+
+
+    printf("\ngood bye :)\n");
 		
     return 0;
 }
