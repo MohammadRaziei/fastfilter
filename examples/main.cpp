@@ -171,6 +171,9 @@ int main() {
     show(ndarr2);
     show(ndarr2 == ndarr);
 
+    NDArray<int> ndarr3(ndarr2.data(), {2,4,3});
+    show(ndarr2 == ndarr3);
+
 
     printf("\ngood bye :)\n");
 		

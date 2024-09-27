@@ -99,6 +99,9 @@ class Array {
         if (_size != other._size){
             return false;
         }
+        if (_data == other._data) {
+            return true;
+        }
         for (uint32_t i {0}; i < _size; ++i) {
             if (_data[i] != other[i]){
                 return false;
