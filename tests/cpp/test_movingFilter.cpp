@@ -142,7 +142,7 @@ std::vector<TestCase> generate_random_test_cases1(uint32_t num_cases,
 		) {
 	std::vector<TestCase> test_cases;
 	std::vector<std::string> kernels = {"average", "median", "maximum", "minimum"};
-	int low = 0; 
+	int low = -100; 
 	int high = 100;
 	
 	TestCase test1; 
@@ -154,6 +154,7 @@ std::vector<TestCase> generate_random_test_cases1(uint32_t num_cases,
 			test1.input.push_back(generate_random_int1(low, high));
 		}
 		test_cases.push_back(test1);
+		test1.input.clear();
 	}
 	return test_cases; 
 }
