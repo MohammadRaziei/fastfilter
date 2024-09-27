@@ -159,8 +159,9 @@ class Array {
         return std::vector<T>(_data, _data + _size);
     }
 
-    void fill(const T& value){
+    Array<T>& fill(const T& value){
         std::fill(begin(), end(), value);
+        return *this;
     }
 
     [[nodiscard]] bool ownsData() const {
