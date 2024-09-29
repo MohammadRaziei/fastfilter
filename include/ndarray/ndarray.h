@@ -21,16 +21,19 @@ public:
     ), _dim(shape.size()), _shape(shape) {
     }
 
+//    NDArray(const std::vector<uint32_t> &shape) : NDArray<T>(shape, 0) {}
     template<typename... Sizes>
-    NDArray(Sizes... sizes) : NDArray(std::vector<uint32_t>{static_cast<uint32_t>(sizes)...}) {
+    explicit NDArray(Sizes... sizes) : NDArray(std::vector<uint32_t>{static_cast<uint32_t>(sizes)...}) {
         static_assert((std::is_integral_v<Sizes> &&...), "Indices must be of an integral type");
     }
 
-    NDArray(const T arr[], const std::vector<uint32_t> &shape) : Array<T>(arr,
+    explicit NDArray(const T arr[], const std::vector<uint32_t> &shape) : Array<T>(arr,
                                                                           std::accumulate(shape.begin(), shape.end(), 1,
                                                                                           std::multiplies<T>())),
                                                                  _dim(shape.size()), _shape(shape) {
     }
+
+    explicit NDArray(const NDArray<T>& other) = default;
 
     const uint32_t dim() const {
         return _dim;
