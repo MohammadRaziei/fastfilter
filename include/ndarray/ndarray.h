@@ -13,12 +13,18 @@
 #include "array.h"
 
 
+enum class NDArrayOrderingAxis {
+    RowMajor = 0,
+    ColumnMajor = 1
+};
+
 template<typename T>
 class NDArray : public Array<T> {
 public:
     NDArray(const std::vector<uint32_t> &shape, const T &value = 0) : Array<T>(
             std::accumulate(shape.begin(), shape.end(), 1, std::multiplies<T>()), value
     ), _dim(shape.size()), _shape(shape) {
+        _mode = NDArrayOrderingAxis::ColumnMajor;
     }
 
 //    NDArray(const std::vector<uint32_t> &shape) : NDArray<T>(shape, 0) {}
@@ -34,6 +40,10 @@ public:
     }
 
     explicit NDArray(const NDArray<T>& other) = default;
+
+    void setAxisMode(enum NDArrayOrderingAxis mode) {
+        _mode = mode;
+    }
 
     const uint32_t dim() const {
         return _dim;
@@ -67,15 +77,30 @@ public:
         return Array<T>::operator==(other);
     }
 
-    const uint32_t calculateIndex(const std::vector<uint32_t> &indices) const {
+    const uint32_t calculateIndex(const std::vector<uint32_t> &indices,
+                                  const enum NDArrayOrderingAxis mode = NDArrayOrderingAxis::ColumnMajor) const {
         if (indices.size() != _dim) {
             throw std::out_of_range("Number of indices does not match dimension");
         }
+
         uint32_t index = 0;
+        if (_dim == 1) {
+            index = indices[0];
+        } else {
+
         uint32_t stride = 1;
-        for (size_t i = 0; i < indices.size(); ++i) {
-            index += indices[i] * stride;
+        for (size_t i = 0; i < _dim; ++i) {
+            if (indices[i] >= _shape[i]) {
+                throw std::out_of_range("Index out of range");
+            }
+            if (i < 2) {
+                index += indices[i] * (mode == static_cast<NDArrayOrderingAxis>(i) ? _shape[i] : 1);
+            }
+            else {
+                index += indices[i] * stride;
+            }
             stride *= _shape[i];
+        }
         }
         if (index >= this->size()) {
             throw std::out_of_range("Index out of range");
@@ -92,12 +117,12 @@ public:
     }
 
     T &operator[](const std::vector<uint32_t> &indices) {
-        uint32_t index = calculateIndex(indices);
+        uint32_t index = calculateIndex(indices, _mode);
         return Array<T>::operator[](index);
     }
 
     const T &operator[](const std::vector<uint32_t> &indices) const {
-        uint32_t index = calculateIndex(indices);
+        uint32_t index = calculateIndex(indices, _mode);
         return Array<T>::operator[](index);
     }
 
@@ -119,6 +144,7 @@ public:
 private:
     uint32_t _dim;
     std::vector<uint32_t> _shape;
+    enum NDArrayOrderingAxis _mode;
 };
 
 #endif  // FASTFILTER_NDARRAY_H

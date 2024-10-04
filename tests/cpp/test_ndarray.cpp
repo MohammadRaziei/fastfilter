@@ -63,10 +63,20 @@ TEST(NDArrayTest, IndexingWithSingleIndex) {
     EXPECT_EQ(arr[9], 10);
 }
 
-TEST(NDArrayTest, IndexingWithMultipleIndices) {
-    GTEST_SKIP() << "Skipping single test";
+TEST(NDArrayTest, IndexingMatching) {
     int data[] = {1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12};
     NDArray<int> arr(data, {3, 4});
+    for(uint32_t i{0}; i < arr.size(0); ++i){
+        for(uint32_t j{0}; j < arr.size(1); ++j) {
+            EXPECT_EQ((arr[{i,j}]), arr(i,j));
+        }
+    }
+}
+
+TEST(NDArrayTest, IndexingWithMultipleIndices) {
+    int data[] = {1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12};
+    NDArray<int> arr(data, {3, 4});
+    arr.setAxisMode(NDArrayOrderingAxis::RowMajor);
     EXPECT_EQ(arr(0, 0), 1);
     EXPECT_EQ(arr(0, 1), 2);
     EXPECT_EQ(arr(0, 2), 3);
@@ -79,9 +89,9 @@ TEST(NDArrayTest, IndexingWithMultipleIndices) {
 }
 
 TEST(NDArrayTest, IndexingWithVector) {
-    GTEST_SKIP() << "Skipping single test";
     int data[] = {1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12};
     NDArray<int> arr(data, {3, 4});
+    arr.setAxisMode(NDArrayOrderingAxis::RowMajor);
     std::vector<uint32_t> indices = {0, 0};
     EXPECT_EQ(arr[indices], 1);
     indices = {0, 1};
