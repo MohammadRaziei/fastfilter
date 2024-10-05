@@ -87,20 +87,20 @@ public:
         if (_dim == 1) {
             index = indices[0];
         } else {
-
-        uint32_t stride = 1;
-        for (size_t i = 0; i < _dim; ++i) {
-            if (indices[i] >= _shape[i]) {
-                throw std::out_of_range("Index out of range");
+            const auto mode_int = static_cast<uint32_t>(mode);
+            uint32_t stride = 1;
+            for (uint32_t i = 0; i < _dim; ++i) {
+                if (indices[i] >= _shape[i]) {
+                    throw std::out_of_range("Index out of range");
+                }
+                if (i < 2) {
+                    index += indices[i] * (mode_int == i ? _shape[i] : 1);
+                }
+                else {
+                    index += indices[i] * stride;
+                }
+                stride *= _shape[i];
             }
-            if (i < 2) {
-                index += indices[i] * (mode == static_cast<NDArrayOrderingAxis>(i) ? _shape[i] : 1);
-            }
-            else {
-                index += indices[i] * stride;
-            }
-            stride *= _shape[i];
-        }
         }
         if (index >= this->size()) {
             throw std::out_of_range("Index out of range");
