@@ -168,8 +168,8 @@ INSTANTIATE_TEST_SUITE_P(
 
 TEST_P(MovfiltRandomTest, MovfiltRandomT) {
 	auto& tc = GetParam(); 	
-	std::vector<float> classic_output(20);
-	std::vector<float> modern_output(20);
+	std::vector<float> classic_output(200);
+	std::vector<float> modern_output(200);
 	
 	if (tc.kernel == "average") {
 		filt::movingFilter(classic_output, tc.input, tc.windowSize / 2, filt::kernel::average); 

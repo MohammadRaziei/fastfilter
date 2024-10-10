@@ -24,7 +24,7 @@ def movingAverageFilter(a, kernelSize):
 
 def medianFilter(a, kernelSize):
     inp = np.insert(a, 0, np.zeros(kernelSize // 2))
-    output = scipy.signal.medfilt(inp, kernelSize)
+    output = scipy.ndimage.median_filter(inp, kernelSize, mode='constant')
     return output[:a.shape[0]]
 
 def maximumFilter(a, kernelSize):
