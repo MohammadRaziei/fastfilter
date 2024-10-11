@@ -16,9 +16,9 @@
 template <typename T>
 class Array {
    private:
+    bool _self_ownership;
     uint32_t _size;
     T* _data;
-    bool _self_ownership;
 
    public:
     // Constructor
@@ -92,6 +92,24 @@ class Array {
         }
     }
 
+    bool operator==(const Array& other) const noexcept{
+        if (this == &other) {
+            return true;
+        }
+        if (_size != other._size){
+            return false;
+        }
+        if (_data == other._data) {
+            return true;
+        }
+        for (uint32_t i {0}; i < _size; ++i) {
+            if (_data[i] != other[i]){
+                return false;
+            }
+        }
+        return true;
+    }
+
     // Add element to the end of the array
     void push_back(const T& value) {
         _size++;
@@ -120,7 +138,7 @@ class Array {
     }
 
     // Size
-    uint32_t size() const {
+    const uint32_t size() const {
         return _size;
     }
 

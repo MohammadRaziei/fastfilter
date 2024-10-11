@@ -10,6 +10,7 @@
 #include "movingFilter/maximumFilter.hpp"
 #include "movingFilter/minimumFilter.hpp"
 #include "ndarray/array.h"
+#include "ndarray/ndarray.h"
 #include "ndarray/matrix.h"
 
 #include <random>
@@ -133,42 +134,59 @@ int main() {
 
 
     printf("============================\n");
-        show(data);
+    show(data);
 
-        printf(">> classic moving min\n");
-        tic;//    mf.setDynamicPadding();
-        filt::movingFilter(filtData, data, halfWindowSize, filt::kernel::minimum);
-        toc;
-        show(filtData);
+    printf(">> classic moving min\n");
+    tic;//    mf.setDynamicPadding();
+    filt::movingFilter(filtData, data, halfWindowSize, filt::kernel::minimum);
+    toc;
+    show(filtData);
 
-        printf(">> modern moving minimum\n");
-        tic;
-        filt::MinimumFilter<float> minFilter(windowSize);
-        minFilter(filtData2, data);
-        toc;
-        show(filtData2);
-
-	calc_mse(filtData, filtData2, data.size());
-
-
-        printf(">> modern rankfilter: 0\n");
-        tic;
-        filt::RankFilter<float> rankFilterMin(windowSize, 0);
-        rankFilterMin(filtData2, data);
-        toc;
-        show(filtData2);
+    printf(">> modern moving minimum\n");
+    tic;
+    filt::MinimumFilter<float> minFilter(windowSize);
+    minFilter(filtData2, data);
+    toc;
+    show(filtData2);
 
 	calc_mse(filtData, filtData2, data.size());
 
 
-        printf("============================\n");
+    printf(">> modern rankfilter: 0\n");
+    tic;
+    filt::RankFilter<float> rankFilterMin(windowSize, 0);
+    rankFilterMin(filtData2, data);
+    toc;
+    show(filtData2);
 
-        Array<int> arr(20, 5);
-        show(arr);
+	calc_mse(filtData, filtData2, data.size());
 
-        Matrix<int> mat(20, 20, 2);
-        show(mat);
-        printf("\ngood bye :)\n");
+
+    printf("============================\n");
+
+    Array<int> arr(20, 5);
+    show(arr);
+
+    Matrix<int> mat(20, 20, 2);
+    show(mat);
+
+    NDArray<int> ndarr({2,4,3}, 5);
+    show((ndarr[{1, 0, 1}]));
+    show(ndarr[6]);
+    show(ndarr(1, 0, 1));
+    show(ndarr.size(0));
+
+    NDArray<int> ndarr2(2,4,3);
+    ndarr2.fill(5);
+    show(ndarr2.shape());
+    show(ndarr2);
+    show(ndarr2 == ndarr);
+
+    NDArray<int> ndarr3(ndarr2.data(), {2,4,3});
+    show(ndarr2 == ndarr3);
+
+
+    printf("\ngood bye :)\n");
 		
     return 0;
 }

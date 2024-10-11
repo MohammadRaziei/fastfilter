@@ -114,18 +114,19 @@ TEST_P(MovfiltTest, MovfiltFunctionModern) {
 	if (tc.kernel == "median") {
 		filt::MedianFilter<float> medianFilter(tc.windowSize); 
 		medianFilter(output, tc.input);
-		ASSERT_EQ(output, tc.output);
 	}
 	else if (tc.kernel == "maximum") {
 		filt::MaximumFilter<float> maxFilter(tc.windowSize);
 		maxFilter(output, tc.input);
-		ASSERT_EQ(output, tc.output);
 	}
 	else if (tc.kernel == "average") {
 		filt::MovingAverage<float> movingAverage(tc.windowSize);
 		movingAverage(output, tc.input);
-		ASSERT_EQ(output, tc.output);
 	}
+    else {
+        throw std::runtime_error("unsupported filter");
+    }
+    EXPECT_EQ(output, tc.output);
 }
 
 
