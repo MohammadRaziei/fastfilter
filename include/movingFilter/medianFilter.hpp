@@ -24,7 +24,8 @@ class MedianFilter : public RankFilterGeneral<T> {
     static T median(const T arr[], const uint32_t size) {
         const uint32_t size2 = size >> 1;
         if(size % 2 == 0)
-            return (arr[size2 - 1] + arr[size2]) / 2;
+            //return (arr[size2 - 1] + arr[size2]) / 2;
+	    return (arr[size2]);
         else
             return arr[size2];
     }
