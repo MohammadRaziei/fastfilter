@@ -51,7 +51,7 @@ int abas(int low, int high) {
 
 int main() {
 
-    std::vector<float> data  {-7, 5, 13, 114, 16, 17, 18, 23, 21, 22, 26, 25, 21, 25, 21, 26, 25, 20, 22, 12, 15, 8, 9,
+ /*   std::vector<float> data  {-7, 5, 13, 114, 16, 17, 18, 23, 21, 22, 26, 25, 21, 25, 21, 26, 25, 20, 22, 12, 15, 8, 9,
                               3, 2, 3, -2, -6, -7, -8, -9, -13, -10, -14, -14, -16, -12, -14, -18, -12, -9, -11, -7,
                               -10, -6, -5, -3, 3, 3, 9, 8, 5, 11, 18, 16, 14, 18, 17, 28, 29, 28, 26, 27, 21, 22, 24,
                               20, 16, 23, 16, 15, 11, 7, 6, 9, 5, -1, -7, -2, -9, -8, -15, -10, -15, -15, -15, -16, -14,
@@ -61,11 +61,13 @@ int main() {
                               15, 12, 14, 116, 20, 25, 21, 28, 24, 26, 22, 26, 28, 21, 18, 18, 16, 15, 13, 5, 4, 5, 5,
                               3, 0, -4, -2, -10, -11, -9, -10, -15, -11, -15, -12, -19, -19, -9, -15, -9, -11, -9, -6,
                               2, 101, 7, 7};
-
-    std::vector<float> filtData(data.size());
+*/
+    std::vector<float> data {-7, 5, 13, 114, 16, 17, 18, 23, 21, 22}; 
+  std::vector<float> filtData(data.size());
 	std::vector<float> filtData2(data.size());
-	const uint32_t halfWindowSize = 2;
-    const uint32_t windowSize = halfWindowSize * 2 + 1;
+	const uint32_t halfWindowSize = 3;
+   // const uint32_t windowSize = halfWindowSize * 2 + 1;
+    const uint32_t windowSize = 6;
 
     printf("============================\n");
     show(data);
@@ -90,7 +92,7 @@ int main() {
 
     printf(">> classic moving median\n");
     tic;//    mf.setDynamicPadding();
-    filt::movingFilter(filtData, data, halfWindowSize, filt::kernel::median);
+    filt::movingFilter(filtData, data, halfWindowSize, filt::kernel::median, true);
     toc;
     show(filtData);
 
@@ -103,7 +105,7 @@ int main() {
     show(filtData2);
 
 	calc_mse(filtData, filtData2, data.size());
-
+/*
     printf("============================\n");
     show(data);
 
@@ -187,6 +189,6 @@ int main() {
 
 
     printf("\ngood bye :)\n");
-		
+	*/	
     return 0;
 }

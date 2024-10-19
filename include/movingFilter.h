@@ -19,7 +19,7 @@ namespace filt {
 
     namespace kernel {
         template<typename T>
-        using KernelType = void (*)(T[], const T[], const uint32_t, const uint32_t, const bool);
+        using KernelType = void (*)(T[], const T[], const uint32_t, const uint32_t, const bool, const bool);
 
 
         namespace utils{
@@ -61,10 +61,14 @@ namespace filt {
                     const uint32_t halfWindow,
                     T (*arrayReducerFunc)(const T arr[], const uint32_t len),
                     const bool fromScratch = true, 
-					const T paddingVal = std::numeric_limits<T>::infinity()
+					const T paddingVal = std::numeric_limits<T>::infinity(), 
+          const bool even = true 
 					) {
 
-                const uint32_t windowSize = 2 * halfWindow + 1;
+                uint32_t windowSize = 2 * halfWindow + 1;
+                if (even) {
+                  windowSize = 2 * halfWindow; 
+                }
                 T *window = new T[windowSize + 1];		// for keeping sorted array
 				T *buffer = new T[windowSize];			// for keeping previous window
 
@@ -91,7 +95,8 @@ namespace filt {
                 if (len & 1){
                     return arr[len2];
                 } else {
-                    return (arr[len2] + arr[len2 - 1]) / 2;
+                    //return (arr[len2] + arr[len2 - 1]) / 2;
+                    return (arr[len2]); 
                 }
             }
 
@@ -113,7 +118,8 @@ namespace filt {
                 const T input[],
                 const uint32_t len,
                 const uint32_t halfWindow,
-                const bool fromScratch = true
+                const bool fromScratch = true, 
+                const bool even = false
 				) {
 
             const uint32_t windowSize = 2 * halfWindow + 1;
@@ -140,10 +146,14 @@ namespace filt {
                            const T input[],
                            const uint32_t len,
                            const uint32_t halfWindow,
-                           const bool fromScratch = true) {
+                           const bool fromScratch = true,
+                           const bool even = false) {
+            std::cout << "len: " << len << std::endl; 
+            std::cout << "half: " << halfWindow << std::endl; 
+            std::cout << "=============" << std::endl; 
             kernel::utils::sortBasedKernel(output, input, len, halfWindow,
                                            kernel::utils::medianArray, fromScratch, 
-										   static_cast<T>(0));
+										   static_cast<T>(0), even);
         }
 
         template<typename T>
@@ -151,20 +161,22 @@ namespace filt {
                         const T input[],
                         const uint32_t len,
                         const uint32_t halfWindow,
-                        const bool fromScratch = true) {
+                        const bool fromScratch = true, 
+                        const bool even = false) {
             kernel::utils::sortBasedKernel(output, input, len, halfWindow,
                                            kernel::utils::maxArray, fromScratch,
-										   std::numeric_limits<T>::lowest());
+										   std::numeric_limits<T>::lowest(), even);
         }
         template<typename T>
         inline void minimum(T output[],
                         const T input[],
                         const uint32_t len,
                         const uint32_t halfWindow,
-                        const bool fromScratch = true) {
+                        const bool fromScratch = true, 
+                        const bool even = false) {
             kernel::utils::sortBasedKernel(output, input, len, halfWindow,
                                            kernel::utils::minArray, fromScratch, 
-										   std::numeric_limits<T>::max());
+										   std::numeric_limits<T>::max(), even);
         }
 
 
@@ -176,10 +188,11 @@ namespace filt {
             const T input[],
             const size_t vecSize,
             const uint32_t halfWindow,
-            kernel::KernelType<T> filtKernel){
+            kernel::KernelType<T> filtKernel,
+            const bool even = false){
         const uint32_t windowSize = 2 * halfWindow + 1;
         filtKernel(output, input, (uint32_t) vecSize,
-                   halfWindow, true);
+                   halfWindow, true, even);
     }
 
 
@@ -189,10 +202,11 @@ namespace filt {
             std::vector <T> &output,
             const std::vector <T> &input,
             const uint32_t halfWindow,
-            kernel::KernelType<T> filtKernel){
+            kernel::KernelType<T> filtKernel,
+            const bool even = false){
         const size_t vectorSize = input.size();
         output.resize(vectorSize);
-        return filt::movingFilter(output.data(), input.data(), vectorSize, halfWindow, filtKernel);
+        return filt::movingFilter(output.data(), input.data(), vectorSize, halfWindow, filtKernel, even);
     }
 
     template<typename T>
