@@ -92,18 +92,26 @@ INSTANTIATE_TEST_SUITE_P(
 // 3 tests) read from the json file for median, max and avg kernels
 TEST_P(MovfiltTest, MovfiltFunction) {
     auto& tc = GetParam();
+    bool even = false; 
+    if (tc.windowSize % 2 == 0) { 
+      even = true; 
+    }
     // Assuming medfilt is a function that takes a vector<int> and returns a vector<int>
     std::vector<float> output;
-    filt::movingFilter(output, tc.input, tc.windowSize / 2, filt::kernels<float>[tc.kernel]);
+    filt::movingFilter(output, tc.input, tc.windowSize / 2, filt::kernels<float>[tc.kernel], even);
     ASSERT_EQ(output, tc.output);
 }
 
 // 3 tests) read from the json file for median, max and avg kernels in inplace mode
 TEST_P(MovfiltTest, MovfiltFunctionInplace) {
     auto& tc = GetParam();
+    bool even = false; 
+    if (tc.windowSize % 2 == 0) {
+      even = true; 
+    }
     // Assuming medfilt is a function that takes a vector<int> and returns a vector<int>
     std::vector<float> output = tc.input;
-    filt::movingFilter(output, output, tc.windowSize / 2, filt::kernels<float>[tc.kernel]);
+    filt::movingFilter(output, output, tc.windowSize / 2, filt::kernels<float>[tc.kernel], even);
     ASSERT_EQ(output, tc.output);
 }
 
@@ -123,6 +131,10 @@ TEST_P(MovfiltTest, MovfiltFunctionModern) {
 		filt::MovingAverage<float> movingAverage(tc.windowSize);
 		movingAverage(output, tc.input);
 	}
+  else if (tc.kernel == "minimum") {
+    filt::MinimumFilter<float> minFilter(tc.windowSize);
+    minFilter(output, tc.input); 
+  }
     else {
         throw std::runtime_error("unsupported filter");
     }
