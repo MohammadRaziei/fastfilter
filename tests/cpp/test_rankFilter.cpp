@@ -129,14 +129,14 @@ TEST_P(RankfiltRandomTest, RankfiltRandomT) {
 		filt::RankFilter<float> rankFilterMax(tc.windowSize, -1); 
 		rankFilterMax(modern_output, tc.input);
 
-		filt::movingFilter(classic_output, tc.input, tc.windowSize / 2, filt::kernel::maximum);
+		filt::movingFilter(classic_output, tc.input, tc.windowSize, filt::kernel::maximum);
 		ASSERT_EQ(classic_output, modern_output); 
 	}
 	else if (tc.kernel == "minimum") {
 		filt::RankFilter<float> rankFilterMin(tc.windowSize, 0);  
 		rankFilterMin(modern_output, tc.input); 
 
-		filt::movingFilter(classic_output, tc.input, tc.windowSize / 2, filt::kernel::minimum); 
+		filt::movingFilter(classic_output, tc.input, tc.windowSize, filt::kernel::minimum); 
 		ASSERT_EQ(classic_output, modern_output);
 	}
 }

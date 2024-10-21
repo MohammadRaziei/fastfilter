@@ -92,26 +92,18 @@ INSTANTIATE_TEST_SUITE_P(
 // 3 tests) read from the json file for median, max and avg kernels
 TEST_P(MovfiltTest, MovfiltFunction) {
     auto& tc = GetParam();
-    bool even = false; 
-    if (tc.windowSize % 2 == 0) { 
-      even = true; 
-    }
     // Assuming medfilt is a function that takes a vector<int> and returns a vector<int>
     std::vector<float> output;
-    filt::movingFilter(output, tc.input, tc.windowSize / 2, filt::kernels<float>[tc.kernel], even);
+    filt::movingFilter(output, tc.input, tc.windowSize, filt::kernels<float>[tc.kernel]);
     ASSERT_EQ(output, tc.output);
 }
 
 // 3 tests) read from the json file for median, max and avg kernels in inplace mode
 TEST_P(MovfiltTest, MovfiltFunctionInplace) {
     auto& tc = GetParam();
-    bool even = false; 
-    if (tc.windowSize % 2 == 0) {
-      even = true; 
-    }
     // Assuming medfilt is a function that takes a vector<int> and returns a vector<int>
     std::vector<float> output = tc.input;
-    filt::movingFilter(output, output, tc.windowSize / 2, filt::kernels<float>[tc.kernel], even);
+    filt::movingFilter(output, output, tc.windowSize, filt::kernels<float>[tc.kernel]);
     ASSERT_EQ(output, tc.output);
 }
 
@@ -185,7 +177,7 @@ TEST_P(MovfiltRandomTest, MovfiltRandomT) {
 	std::vector<float> modern_output(200);
 	
 	if (tc.kernel == "average") {
-		filt::movingFilter(classic_output, tc.input, tc.windowSize / 2, filt::kernel::average); 
+		filt::movingFilter(classic_output, tc.input, tc.windowSize, filt::kernel::average); 
 
 		filt::MovingAverage<float> movingAverage(tc.windowSize); 
 		movingAverage(modern_output, tc.input);
@@ -193,7 +185,7 @@ TEST_P(MovfiltRandomTest, MovfiltRandomT) {
 		ASSERT_EQ(classic_output, modern_output); 
 	}
 	else if (tc.kernel == "median") {
-		filt::movingFilter(classic_output, tc.input, tc.windowSize / 2, filt::kernel::median); 
+		filt::movingFilter(classic_output, tc.input, tc.windowSize, filt::kernel::median); 
 
 		filt::MedianFilter<float> medianFilter(tc.windowSize); 
 		medianFilter(modern_output, tc.input);
@@ -201,7 +193,7 @@ TEST_P(MovfiltRandomTest, MovfiltRandomT) {
 		ASSERT_EQ(classic_output, modern_output);
 	}
 	else if (tc.kernel == "maximum") {
-		filt::movingFilter(classic_output, tc.input, tc.windowSize / 2, filt::kernel::maximum); 
+		filt::movingFilter(classic_output, tc.input, tc.windowSize, filt::kernel::maximum); 
 
 		filt::MaximumFilter<float> maxFilter(tc.windowSize); 
 		maxFilter(modern_output, tc.input);
@@ -209,7 +201,7 @@ TEST_P(MovfiltRandomTest, MovfiltRandomT) {
 		ASSERT_EQ(classic_output, modern_output);
 	}
 	else if (tc.kernel == "minimum") {
-		filt::movingFilter(classic_output, tc.input, tc.windowSize / 2, filt::kernel::minimum); 
+		filt::movingFilter(classic_output, tc.input, tc.windowSize, filt::kernel::minimum); 
 
 		filt::MinimumFilter<float> minFilter(tc.windowSize); 
 		minFilter(modern_output, tc.input); 
